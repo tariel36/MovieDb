@@ -1,0 +1,19 @@
+.languages-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.language-image-large {
+    width: 100px;
+}
+
+.language-image-small {
+    width: 25px;
+}
+
+.language-image {
+    cursor: pointer;
+    border: 1px solid black;
+}

@@ -1,0 +1,113 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.main-title-container {
+    > button {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+
+    > .header-big {
+        padding-left: 0px !important;
+    }
+}
+
+.details-container {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    gap: 5px;
+}
+
+.actions-container {
+    padding: 5px;
+    flex: 1 1 0px
+}
+
+.image-container {
+    padding: 5px;
+}
+
+.attributes-container {
+    padding: 5px;
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.episodes-container {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+.header-big {
+    padding: 20px;
+    font-size: xx-large;
+}
+
+.details-right-column {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-content: space-evenly;
+}
+
+.attributes-table {
+    width: 100%;
+}
+
+.description {
+    text-align: justify;
+}
+
+.attributes-inner-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-content: space-evenly;
+}
+
+.attributes-column {
+    flex: 1 1 0px;
+}
+
+.small-title {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.small-content {
+    margin-bottom: 5px;
+}
+
+.images-container {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.additional-image-container {
+    max-width: 200px;
+    padding: 5px;
+}
+
+.label-column {
+    min-width: 100px;
+}

@@ -1,0 +1,15 @@
+<div class="instructions-container">
+    <div class="general-container">
+        <span>{{ 'instructions-general-1' | translate }}</span>
+        <span><a href="https://www.videolan.org/vlc/">{{ 'vlc-player' | translate }}</a></span>
+    </div>
+    <hr class="w-100" />
+    <ng-container *ngIf="selectedInstructions">
+        <ng-container *ngFor="let row of selectedInstructions.rows;">
+            <p>{{ row.text | translate }}</p>
+            <div class="img-container">
+                <img *ngFor="let idx of row.images" class="clickable" [src]="images[idx].src" (click)="openImage(idx)" />
+            </div>
+        </ng-container>
+    </ng-container>
+</div>

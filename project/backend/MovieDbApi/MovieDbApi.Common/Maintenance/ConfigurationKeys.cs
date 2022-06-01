@@ -1,0 +1,13 @@
+﻿namespace MovieDbApi.Common.Maintenance
+{
+    public static class ConfigurationKeys
+    {
+        public const string DefaultConnectionString = nameof(DefaultConnectionString);
+        public const string MyAnimeList = nameof(MyAnimeList);
+        public const string OpenMovieDb = nameof(OpenMovieDb);
+        public const string ApiKeys = nameof(ApiKeys);
+        public const string IsDeveloper = nameof(IsDeveloper);
+        public const string ApiKeysOpenMovieDb = $"{ApiKeys}:{OpenMovieDb}";
+        public const string ApiKeysMyAnimeList = $"{ApiKeys}:{MyAnimeList}";
+    }
+}

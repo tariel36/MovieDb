@@ -1,0 +1,21 @@
+.library-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.no-results-text {
+    font-size: xx-large;
+    margin-top: 60px;
+}
+
+.results-text {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.search-field {
+    display: flex;
+    flex-direction: row;
+}

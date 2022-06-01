@@ -1,0 +1,18 @@
+<div *ngIf="isLoading" class="loading">
+    <mat-progress-spinner color="primary" mode="indeterminate">
+    </mat-progress-spinner>
+</div>
+<div *ngIf="!isLoading" class="search-field">
+    <mat-form-field class="w-100" appearance="legacy">
+        <mat-label>{{ 'search' | translate }}</mat-label>
+        <input matInput [value]="searchText" (input)="onSearchTextInput($event)" (keyup)="onSearchKeyUp($event)">
+    </mat-form-field>
+    <button mat-button (click)="onSearchClick()">{{ 'search' | translate }}</button>
+</div>
+<div *ngIf="!isLoading" class="results-text">
+    <div *ngIf="hasItems">{{ itemsCountLabel }}</div>
+</div>
+<div *ngIf="!isLoading" class="library-container">
+    <app-collection [items]="items"></app-collection>
+    <div *ngIf="!hasItems" class="no-results-text">{{ 'no-results' | translate }}</div>
+</div>

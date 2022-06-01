@@ -1,0 +1,119 @@
+<div *ngIf="isLoading" class="loading">
+    <mat-progress-spinner color="primary" mode="indeterminate">
+    </mat-progress-spinner>
+</div>
+<div *ngIf="!isLoading" class="main-container">
+    <div class="title-container main-title-container mat-elevation-z2">
+        <button mat-icon-button (click)="onBackClick()"><mat-icon>arrow_back</mat-icon></button>
+        <div class="header-big">{{title}}</div>
+    </div>
+    <div class="details-container mat-elevation-z2">
+        <div class="image-container mat-elevation-z2 h-fit-content">
+            <img [src]="mediaItem.groupingItem.image" />
+        </div>
+        <div class="details-right-column">
+            <div class="attributes-container mat-elevation-z2">
+                <div class="attributes-inner-container">
+                    <div *ngIf="mediaItem.groupingItem.attributes" class="attributes-column">
+                        <div class="mat-elevation-z2 small-title">
+                            {{ 'attributes' | translate }}
+                        </div>
+                        <table mat-table [dataSource]="mediaItem.groupingItem.attributes" class="attributes-table">
+                            <ng-container matColumnDef="name">
+                              <th mat-header-cell *matHeaderCellDef class="label-column"> {{ 'name' | translate }} </th>
+                              <td mat-cell *matCellDef="let element" class="label-column"> {{element.name}} </td>
+                            </ng-container>
+    
+                            <ng-container matColumnDef="value">
+                              <th mat-header-cell *matHeaderCellDef> {{ 'value' | translate }} </th>
+                              <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+                            </ng-container>
+                          
+                            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+                        </table>
+                    </div>
+                    <div class="flex-column attributes-column">
+                        <div *ngIf="hasItemsInArray(mediaItem.groupingItem.languages)">
+                            <div class="mat-elevation-z2 small-title">
+                                {{ 'languages' | translate }}
+                            </div>
+                            <table mat-table [dataSource]="mediaItem.groupingItem.languages" class="attributes-table">
+                                <ng-container matColumnDef="name">
+                                  <th mat-header-cell *matHeaderCellDef class="label-column"> {{ 'name' | translate }} </th>
+                                  <td mat-cell *matCellDef="let element" class="label-column"> {{element.name}} </td>
+                                </ng-container>
+        
+                                <ng-container matColumnDef="value">
+                                  <th mat-header-cell *matHeaderCellDef> {{ 'value' | translate }} </th>
+                                  <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+                                </ng-container>
+                              
+                                <tr mat-header-row *matHeaderRowDef="columns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+                            </table>
+                        </div>
+                        <div *ngIf="hasItemsInArray(mediaItem.groupingItem.links)">
+                            <div class="mat-elevation-z2 small-title">
+                                {{ 'links' | translate }}
+                            </div>
+                            <div class="small-content">
+                                <div *ngFor="let item of mediaItem.groupingItem.links" class="small-content">
+                                    <a [href]="item.link" class="small-text">{{getDomainName(item)}}</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="hasItemsInArray(mediaItem.groupingItem.titles)">
+                            <div class="mat-elevation-z2 small-title">
+                                {{ 'alternative-titles' | translate }}
+                            </div>
+                            <div class="small-content">
+                                <div *ngFor="let item of mediaItem.groupingItem.titles" class="small-text">
+                                    {{item.title}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    {{mediaItem.groupingItem.description}}
+                </div>
+            </div>
+            <div class="actions-container mat-elevation-z2">
+                <div class="mat-elevation-z2 small-title">
+                    {{ 'location' | translate }}
+                </div>
+                <div>
+                    <mat-form-field class="w-100" appearance="legacy">
+                        <mat-label>{{ 'path' | translate }}</mat-label>
+                        <input matInput readonly [value]="mediaItem.groupingItem.path">
+                    </mat-form-field>
+                </div>
+                <div *ngIf="mediaItem.groupingItem.instructions" class="mat-elevation-z2 small-title">
+                    {{ 'instructions' | translate }}
+                </div>
+                <div *ngIf="mediaItem.groupingItem.instructions" class="mat-elevation-z2 small-title">
+                    <app-instructions [instructions]="mediaItem.groupingItem.instructions"></app-instructions>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="hasItems" class="title-container mat-elevation-z2">
+        <div class="header-big">{{ 'episodes' | translate }}</div>
+    </div>
+    <div *ngIf="hasItems" class="episodes-container mat-elevation-z2">
+        <div *ngIf="mediaItem.items" class="library-container">
+            <app-collection [items]="mediaItem.items"></app-collection>
+        </div>
+    </div>
+    <div *ngIf="hasImages" class="title-container mat-elevation-z2">
+        <div class="header-big">{{ 'images' | translate }}</div>
+    </div>
+    <div *ngIf="hasImages" class="images-container mat-elevation-z2">
+        <div *ngIf="hasItemsInArray(images)" class="images-container">
+            <div *ngFor="let item of images; let i=index" class="additional-image-container mat-elevation-z2 h-fit-content">
+                <img [src]="item.src" class="w-100 clickable" (click)="openImage(i)" />
+            </div>
+        </div>
+    </div>
+</div>

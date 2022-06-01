@@ -1,0 +1,69 @@
+$titleHeight: 50px;
+
+.library-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 225px;
+    min-width: 225px;
+    width: 225px;
+    max-height: 335px;
+    min-height: 335px;
+    height: 335px;
+    cursor: pointer;
+    position: relative;
+}
+
+.library-item-content {
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.title {
+    height: $titleHeight;
+
+    display: flex;
+
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.inner-title {
+    overflow: hidden;
+    height: 80%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    vertical-align: middle;
+    text-align: center;
+    width: 100%;
+}
+
+.image-container {
+    height: calc(100% - #{$titleHeight});
+}
+
+.image {
+    max-height: 100%;
+}
+
+.description-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+    overflow: hidden;
+    padding: 5px;
+    background: rgba(204, 204, 204, 0.9);
+}

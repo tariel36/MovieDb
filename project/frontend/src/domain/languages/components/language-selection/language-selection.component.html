@@ -1,0 +1,9 @@
+<div class="languages-container">
+    <img *ngFor="let lang of languages;"
+        [src]="lang.image"
+        [alt]="lang.name"
+        [class.language-image-large]="isLarge"
+        [class.language-image-small]="!isLarge"
+        class="language-image"
+        (click)="onFlagClick(lang)" />
+</div>

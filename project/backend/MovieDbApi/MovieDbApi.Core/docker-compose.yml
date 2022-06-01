@@ -1,0 +1,31 @@
+﻿version: '3.9'
+name: moviedb
+services:
+  moviedb-mysql:
+    container_name: moviedb-mysql
+    image: mysql/mysql-server:latest
+    volumes:
+      - moviedb-mysql-data:/var/lib/mysql
+    ports:
+      - 3307:3306
+    networks:
+      - moviedb-net
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  moviedb-phpmyadmin:
+    container_name: moviedb-phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8081:80
+    networks:
+      - moviedb-net
+    environment:
+      - PMA_ARBITRARY=1
+
+volumes:
+  moviedb-mysql-data:
+
+networks:
+  moviedb-net:
+    external: false

@@ -1,0 +1,17 @@
+<mat-toolbar color="primary">
+    <div class="clickable" (click)="onTitleClick()"><span>{{title}}</span></div>
+    <span class="navigation-spacer"></span>
+    <div>
+        <button mat-button class="random-button" (click)="onRandomClick()">{{ 'random' | translate }}</button>
+    </div>
+    <div>
+        <app-language-selection></app-language-selection>
+    </div>
+    <button mat-icon-button (click)="onOptionsClick()">
+        <mat-icon>settings</mat-icon>
+    </button>
+</mat-toolbar>
+
+<div class="outlet">
+    <router-outlet></router-outlet>
+</div>
