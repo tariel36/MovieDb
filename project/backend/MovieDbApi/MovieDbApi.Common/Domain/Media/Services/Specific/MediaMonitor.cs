@@ -10,7 +10,6 @@ using MovieDbApi.Common.Domain.Media.Models.Monitoring;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
 using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Maintenance;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MovieDbApi.Common.Domain.Media.Services.Specific
 {
@@ -40,7 +39,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
 
-            MediaCrawlerService crawler = new MediaCrawlerService(bool.TryParse(_configuration[ConfigurationKeys.IsDeveloper], out bool isDeveloper) && isDeveloper);
+            MediaCrawlerService crawler = new MediaCrawlerService(false && bool.TryParse(_configuration[ConfigurationKeys.IsDeveloper], out bool isDeveloper) && isDeveloper);
 
             foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path))
             {

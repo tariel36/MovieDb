@@ -41,7 +41,7 @@ namespace MovieDbApi.Common.Domain.Tasks
 
         private async Task ServiceProcedure()
         {
-            TimeSpan firstRunDelay = DateTime.UtcNow - StartTime;
+            TimeSpan firstRunDelay = StartTime.AddDays(1) - DateTime.UtcNow;
 
             await Task.Delay(firstRunDelay, CancellationToken);
 
@@ -50,13 +50,13 @@ namespace MovieDbApi.Common.Domain.Tasks
                 try
                 {
                     TaskProcedure(CancellationToken);
-
-                    await Task.Delay(Delay, CancellationToken);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
+
+                await Task.Delay(Delay, CancellationToken);
             }
         }
     }

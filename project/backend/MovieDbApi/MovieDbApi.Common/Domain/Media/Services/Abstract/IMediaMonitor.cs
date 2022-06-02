@@ -8,5 +8,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Abstract
 {
     public interface IMediaMonitor
     {
+        void Work();
     }
 }
