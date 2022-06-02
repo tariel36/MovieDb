@@ -21,14 +21,24 @@ export class MediaItemsService {
         await this.httpClient.post<IMediaItem[]>(
             `${environment.baseApiUrl}/DataProvider/options/NotificationEmail`,
             email,
-            { headers: { 'MediaItemTypes': (mediaItemTypes ?? []).map(x => x.toString()).join(',') } }
+            {
+                headers: {
+                    MediaItemTypes: (mediaItemTypes ?? []).map(x => x.toString()).join(','),
+                    Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string
+                }
+            }
         ).toPromise();
     }
 
     public async getRandom(mediaItemTypes?: number[] | string[]): Promise<Maybe<number>> {
         const item = await this.httpClient.get<number>(
             `${environment.baseApiUrl}/DataProvider/random`,
-            { headers: { 'MediaItemTypes': (mediaItemTypes ?? []).map(x => x.toString()).join(',') } }
+            {
+                headers: {
+                    MediaItemTypes: (mediaItemTypes ?? []).map(x => x.toString()).join(','),
+                    Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string
+                }
+            }
         ).toPromise();
     
         return item ?? -1;
@@ -38,7 +48,12 @@ export class MediaItemsService {
         const items = await this.httpClient.post<IMediaItem[]>(
             `${environment.baseApiUrl}/DataProvider/search`,
             searchText,
-            { headers: { 'MediaItemTypes': (mediaItemTypes ?? []).map(x => x.toString()).join(',') } },
+            {
+                headers: {
+                    MediaItemTypes: (mediaItemTypes ?? []).map(x => x.toString()).join(','),
+                    Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string
+                }
+            }
         ).toPromise();
     
         return items ?? [];
@@ -47,21 +62,30 @@ export class MediaItemsService {
     public async getAllMediaItems(mediaItemTypes?: number[] | string[]): Promise<IMediaItem[]> {
         const items = await this.httpClient.get<IMediaItem[]>(
             `${environment.baseApiUrl}/DataProvider`,
-            { headers: { 'MediaItemTypes': (mediaItemTypes ?? []).map(x => x.toString()).join(',') } }
+            {
+                headers: {
+                    MediaItemTypes: (mediaItemTypes ?? []).map(x => x.toString()).join(','),
+                    Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string
+                }
+            }
         ).toPromise();
     
         return items ?? [];
     }
 
     public async getMediaItem(id: Maybe<string> | Maybe<number>): Promise<Maybe<IMediaItem>> {
-        return await this.httpClient.get<IMediaItem>(`${environment.baseApiUrl}/DataProvider/${id}`).toPromise();
+        return await this.httpClient
+            .get<IMediaItem>(
+                `${environment.baseApiUrl}/DataProvider/${id}`,
+                { headers: { Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string } }
+            ).toPromise();
     }
 
     public async getGroup(id: Maybe<string> | Maybe<number>): Promise<Maybe<IGroupMediaItem>> {
         return await this.httpClient
             .get<IGroupMediaItem>(
                 `${environment.baseApiUrl}/DataProvider/group/${id}`,
-                { headers: { 'Language': this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string } }
+                { headers: { Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string } }
             ).toPromise();
     }
 
@@ -69,7 +93,7 @@ export class MediaItemsService {
         return await this.httpClient
             .get<IGroupMediaItem>(
                 `${environment.baseApiUrl}/DataProvider/details/${id}`,
-                { headers: { 'Language': this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string } }
+                { headers: { Language: this.localStorageService.getValue(LocalStorageKeys.language, 'en') as string } }
             ).toPromise();
     }
 
