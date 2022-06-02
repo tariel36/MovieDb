@@ -22,7 +22,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public void SetNotificationEmail(string email, MediaItemType[] types)
         {
-            Subscriber subscriber = _mediaContext.Subscribers.FirstOrDefault(x => x.Email == email);
+            Subscriber subscriber = _mediaContext.Subscribers.Include(x => x.MediaItemTypes).FirstOrDefault(x => x.Email == email);
 
             if (subscriber == null)
             {
@@ -32,6 +32,12 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     Email = email,
                     MediaItemTypes = null
                 };
+            }
+
+            if (subscriber.MediaItemTypes?.Count > 0)
+            {
+                _mediaContext.RemoveRange(subscriber.MediaItemTypes);
+                _mediaContext.SaveChanges();
             }
 
             subscriber.MediaItemTypes = types?.Select(x => new SubscriberMediaItemType() { Type = x }).ToArray() ?? new SubscriberMediaItemType[0];
