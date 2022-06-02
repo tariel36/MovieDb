@@ -5,6 +5,18 @@ namespace MovieDbApi.Common.Domain.Utility
 {
     public static class Extensions
     {
+        public static void SafeDispose(IDisposable disposable)
+        {
+            try
+            {
+                disposable?.Dispose();
+            }
+            catch
+            {
+                // Ignored
+            }
+        }
+
         public static string GetNonEmpty(params object[] objs)
         {
             List<string> items = new List<string>();
