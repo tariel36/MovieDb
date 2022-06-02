@@ -1,12 +1,11 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using MovieDbApi.Common.Domain.Apis.Converters.Abstract;
 using MovieDbApi.Common.Domain.Apis.Converters.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Dto;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Utility;
 
 namespace MovieDbApi.Core.Controllers
 {
@@ -17,7 +16,6 @@ namespace MovieDbApi.Core.Controllers
     {
         private const string Language = nameof(Language);
         private const string MediaItemTypes = nameof(MediaItemTypes);
-        private const string SourceLanguage = "en";
 
         private readonly IMediaService _mediaService;
         private readonly IBackendToFrontendConverter _converter;
@@ -31,6 +29,7 @@ namespace MovieDbApi.Core.Controllers
         [HttpPost("options/NotificationEmail")]
         public void SetNotificationEmail()
         {
+            string targetLang = GetTargetLanguage();
             MediaItemType[] types = GetMediaItemTypes();
 
             string email;
@@ -45,7 +44,7 @@ namespace MovieDbApi.Core.Controllers
                 return;
             }
 
-            _mediaService.SetNotificationEmail(email, types);
+            _mediaService.SetNotificationEmail(email, targetLang, types);
         }
 
         [HttpPost("search")]
@@ -77,7 +76,7 @@ namespace MovieDbApi.Core.Controllers
                 }
             }
 
-            return result.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, SourceLanguage, targetLang))).ToList();
+            return result.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang))).ToList();
         }
 
         [HttpGet("random")]
@@ -116,7 +115,7 @@ namespace MovieDbApi.Core.Controllers
                 }
             }
 
-            return result.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, SourceLanguage, targetLang))).ToList();
+            return result.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang))).ToList();
         }
 
         [HttpGet("{id:int}")]
@@ -124,7 +123,7 @@ namespace MovieDbApi.Core.Controllers
         {
             string targetLang = GetTargetLanguage();
 
-            return _converter.Convert(new BackendToFrontendConverterContex(_mediaService.GetById(id), SourceLanguage, targetLang));
+            return _converter.Convert(new BackendToFrontendConverterContex(_mediaService.GetById(id), CommonConsts.BaseLanguage, targetLang));
         }
 
         [HttpGet("group/{id:int}")]
@@ -136,8 +135,8 @@ namespace MovieDbApi.Core.Controllers
 
             if (grp != null)
             {
-                grp.Items = grp.Items.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, SourceLanguage, targetLang))).ToList();
-                grp.GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(grp.GroupingItem, SourceLanguage, targetLang));
+                grp.Items = grp.Items.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang))).ToList();
+                grp.GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(grp.GroupingItem, CommonConsts.BaseLanguage, targetLang));
             }
 
             return grp;
@@ -157,7 +156,7 @@ namespace MovieDbApi.Core.Controllers
 
             return new GroupMediaItem()
             {
-                GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(item, SourceLanguage, targetLang)),
+                GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(item, CommonConsts.BaseLanguage, targetLang)),
                 Items = new List<MediaItem>()
             };
         }
