@@ -9,5 +9,10 @@
         public const string IsDeveloper = nameof(IsDeveloper);
         public const string ApiKeysOpenMovieDb = $"{ApiKeys}:{OpenMovieDb}";
         public const string ApiKeysMyAnimeList = $"{ApiKeys}:{MyAnimeList}";
+        public const string Email = nameof(Email);
+        public const string From = nameof(From);
+        public const string User = nameof(User);
+        public const string Password = nameof(Password);
+        public const string Host = nameof(Host);
     }
 }
