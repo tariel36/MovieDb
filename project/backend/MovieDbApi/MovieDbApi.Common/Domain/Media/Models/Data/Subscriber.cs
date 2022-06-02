@@ -10,6 +10,8 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
         public string Name { get; set; }
 
         public string Email { get; set; }
+        
+        public string Language { get; set; }
 
         public virtual ICollection<SubscriberMediaItemType> MediaItemTypes { get; set; }
     }
