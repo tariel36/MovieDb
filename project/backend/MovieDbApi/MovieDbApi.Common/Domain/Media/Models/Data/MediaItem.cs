@@ -7,7 +7,7 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
     {
         public MediaItem()
         {
-            DateAdded = DateTime.Now;
+            DateAdded = DateTime.UtcNow;
         }
 
         [Key]

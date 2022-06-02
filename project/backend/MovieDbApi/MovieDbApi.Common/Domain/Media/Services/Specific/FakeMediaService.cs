@@ -56,7 +56,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             throw new NotImplementedException();
         }
 
-        public void SetNotificationEmail(string email, MediaItemType[] types)
+        public void SetNotificationEmail(string email, string language, MediaItemType[] types)
         {
             throw new NotImplementedException();
         }

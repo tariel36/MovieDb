@@ -20,7 +20,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public IQueryable<MediaItem> MediaItems { get { return _mediaContext.MediaItems; } }
 
-        public void SetNotificationEmail(string email, MediaItemType[] types)
+        public void SetNotificationEmail(string email, string language, MediaItemType[] types)
         {
             Subscriber subscriber = _mediaContext.Subscribers.Include(x => x.MediaItemTypes).FirstOrDefault(x => x.Email == email);
 
@@ -40,6 +40,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 _mediaContext.SaveChanges();
             }
 
+            subscriber.Language = language;
             subscriber.MediaItemTypes = types?.Select(x => new SubscriberMediaItemType() { Type = x }).ToArray() ?? new SubscriberMediaItemType[0];
 
             if (subscriber.Id == 0)

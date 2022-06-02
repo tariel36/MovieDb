@@ -168,7 +168,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 Image = item.SelectedPoster,
                 Path = isGroup ? item.Directory : item.FilePath,
                 IsGrouping = isGroup,
-                DateAdded = DateTime.Now,
+                DateAdded = DateTime.UtcNow,
                 Instructions = InstructionsProvider.Get(item.Directory, item.FilePath),
                 ExternalId = item.ExternalId,
                 Attributes = attributes,
