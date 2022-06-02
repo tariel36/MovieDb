@@ -34,5 +34,8 @@
     "instructions-bluray-3": "In the new window select `Blu-Ray` and click `Browse...` button.",
     "instructions-bluray-4": "Navigate to directory with the movie, to the one where BDMVM and CERTIFICATE directories are. Do not click any of those two and click `Select directory` button. For example, the directory where those directories are is called BDROM.",
     "instructions-bluray-5": "After choosing the directory, click `Play` button.",
-    "instructions-bluray-6": "Movies in this format are pure copy of Blu-Ray discs, so all the intros, advertisements etc. can't be skipped. In the end, you will reach the movie menu (it's the same like you would play it on physical device). In that case you have to click `on the screen` the proper `play` button (or similar). Subtitles and audio language can be changed the usual way."
+    "instructions-bluray-6": "Movies in this format are pure copy of Blu-Ray discs, so all the intros, advertisements etc. can't be skipped. In the end, you will reach the movie menu (it's the same like you would play it on physical device). In that case you have to click `on the screen` the proper `play` button (or similar). Subtitles and audio language can be changed the usual way.",
+    "email": "e-mail",
+    "Cancel": "Cancel",
+    "notifications-instructions": "If you want to receive notifications about new movies, series or other media, please provide your e-mail address."
 }

@@ -1,0 +1,15 @@
+.container {
+    max-width: 300px;
+    text-align: justify;
+    align-items: flex-end;
+}
+
+.button {
+    max-width: 100px;
+    align-self: flex-end;
+    justify-self: flex-end;
+}
+
+.align-right {
+    justify-content: flex-end;
+}

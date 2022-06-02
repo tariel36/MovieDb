@@ -30,7 +30,7 @@ export class LanguageSelectionComponent implements OnInit {
 
     public onFlagClick(lang: ILanguage): void {
         this.localStorageService.setValue(LocalStorageKeys.language, lang.slug);
-        this.localStorageService.setValue(LocalStorageKeys.languageSelected, "1")
+        this.localStorageService.setValue(LocalStorageKeys.isLanguageSelected, "1")
         this.translateService.use(lang.slug)
         window.location.reload();
     }

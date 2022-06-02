@@ -6,6 +6,8 @@ import { VisibleMediaItemTypesDialogComponent } from './components/visible-media
 import { MaterialModule } from '../../material/material.module';
 import { LanguagesModule } from '../languages/languages.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { NotificationEmailComponent } from './components/notification-email/notification-email.component';
+import { NotificationEmailDialogComponent } from './components/notification-email-dialog/notification-email-dialog.component';
 
 
 
@@ -13,7 +15,9 @@ import { TranslateModule } from '@ngx-translate/core';
   declarations: [
     OptionsContainerComponent,
     VisibleMediaItemTypesComponent,
-    VisibleMediaItemTypesDialogComponent
+    VisibleMediaItemTypesDialogComponent,
+    NotificationEmailComponent,
+    NotificationEmailDialogComponent
   ],
   imports: [
     CommonModule,

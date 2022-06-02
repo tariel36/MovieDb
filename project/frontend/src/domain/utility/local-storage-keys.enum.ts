@@ -1,6 +1,8 @@
 export enum LocalStorageKeys {
     language = 'language',
-    languageSelected = 'languageSelected',
+    isLanguageSelected = 'isLanguageSelected',
     selectedMediaItemTypes = 'selectedMediaItemTypes',
-    mediaItemTypesSelected = 'mediaItemTypesSelected'
+    isMediaItemTypesSelected = 'isMediaItemTypesSelected',
+    notificationEmail = 'notificationEmail',
+    isNotificationSelected = 'isNotificationSelected'
 }

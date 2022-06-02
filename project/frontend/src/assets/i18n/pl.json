@@ -34,5 +34,8 @@
     "instructions-bluray-3": "W nowym oknie wybierz typ dysku `Blu-ray`, a następnie kliknij w przycisk `Przeglądaj...`.",
     "instructions-bluray-4": "Przejdź do folderu z filmem, w którym znajdują się foldery BDMV i CERTIFICATE. Nie wybieraj żadnego z nich i kliknij `Wybierz Folder`. Przykładowo, folder w którym znadują się wspomniane foldery, w przykładzie nazwa się BDROM.",
     "instructions-bluray-5": "Po wybraniu odpowiedniego folderu, wciśnij `Odtwórz`.",
-    "instructions-bluray-6": "Filmy w tym formacie to czysta kopia dysku Blu-Ray, więc wszystkie filmiki wprowadzające, reklamy, itp. muszą sie odtworzyć. Na samym końcu plik dociera do menu (tak jakby był odtwarzan na normalnym urządzeniu). W takiej sytuacji należy wcisnąć `na ekranie` przycisk `Play` (albo odtwórz czy inne). Napisy i język dźwięku można zmienić w standardowy sposób."
+    "instructions-bluray-6": "Filmy w tym formacie to czysta kopia dysku Blu-Ray, więc wszystkie filmiki wprowadzające, reklamy, itp. muszą sie odtworzyć. Na samym końcu plik dociera do menu (tak jakby był odtwarzan na normalnym urządzeniu). W takiej sytuacji należy wcisnąć `na ekranie` przycisk `Play` (albo odtwórz czy inne). Napisy i język dźwięku można zmienić w standardowy sposób.",
+    "email": "e-mail",
+    "cancel": "Anuluj",
+    "notifications-instructions": "Jeśli chcesz otrzymywać powiadomienia o nowych filmach, serialach czy innych mediach, które obserwujesz to podaj swój adres email."
 }

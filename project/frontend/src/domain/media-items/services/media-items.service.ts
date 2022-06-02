@@ -17,6 +17,14 @@ export class MediaItemsService {
 
     }
 
+    public async setNotificationEmail(email: string, mediaItemTypes?: number[] | string[]): Promise<void> {
+        await this.httpClient.post<IMediaItem[]>(
+            `${environment.baseApiUrl}/DataProvider/options/NotificationEmail`,
+            email,
+            { headers: { 'MediaItemTypes': (mediaItemTypes ?? []).map(x => x.toString()).join(',') } }
+        ).toPromise();
+    }
+
     public async getRandom(mediaItemTypes?: number[] | string[]): Promise<Maybe<number>> {
         const item = await this.httpClient.get<number>(
             `${environment.baseApiUrl}/DataProvider/random`,

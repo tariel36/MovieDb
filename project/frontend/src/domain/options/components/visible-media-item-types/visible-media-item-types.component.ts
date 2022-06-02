@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { TranslateService } from '@ngx-translate/core';
+import { MediaItemsService } from '../../../media-items/services/media-items.service';
 import { MediaItemType } from '../../../models/media/media-item-type.enum';
+import { Maybe } from '../../../models/utility/maybe.type';
 import { LocalStorageKeys } from '../../../utility/local-storage-keys.enum';
 import { LocalStorageService } from '../../../utility/local-storage.service';
 import { IVisibleMediaItemType } from '../../models/visible-media-item-type.interface';
@@ -18,6 +20,7 @@ export class VisibleMediaItemTypesComponent
     public items: IVisibleMediaItemType[] = [];
 
     constructor(
+        private readonly mediaItemsService: MediaItemsService,
         private readonly localStorageService: LocalStorageService,
         private readonly translateService: TranslateService
     ) { }
@@ -51,9 +54,16 @@ export class VisibleMediaItemTypesComponent
     public onApplyClicked(): void {
       const selected = this.items.filter(x => x.checked).map(x => x.id);
       this.localStorageService.setValue(LocalStorageKeys.selectedMediaItemTypes, JSON.stringify(selected));
-      this.localStorageService.setValue(LocalStorageKeys.mediaItemTypesSelected, "1");
-  
-      window.location.reload();
+      this.localStorageService.setValue(LocalStorageKeys.isMediaItemTypesSelected, "1");
+
+      const email: Maybe<string> = this.localStorageService.getValue(LocalStorageKeys.notificationEmail);
+
+      if (email != null) {
+        this.mediaItemsService.setNotificationEmail(email, selected)
+            .finally(() => { window.location.reload(); });
+      } else {
+        window.location.reload();
+      }
     }
   
     public onItemChanged(args: MatCheckboxChange, item: IVisibleMediaItemType): void {
