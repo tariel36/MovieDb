@@ -11,6 +11,6 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
 
         public string Email { get; set; }
 
-        public virtual ICollection<SubscriberPath> Paths { get; set; }
+        public virtual ICollection<SubscriberMediaItemType> MediaItemTypes { get; set; }
     }
 }

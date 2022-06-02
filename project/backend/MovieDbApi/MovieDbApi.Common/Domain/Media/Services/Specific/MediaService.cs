@@ -20,6 +20,34 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public IQueryable<MediaItem> MediaItems { get { return _mediaContext.MediaItems; } }
 
+        public void SetNotificationEmail(string email, MediaItemType[] types)
+        {
+            Subscriber subscriber = _mediaContext.Subscribers.FirstOrDefault(x => x.Email == email);
+
+            if (subscriber == null)
+            {
+                subscriber = new Subscriber()
+                {
+                    Name = email,
+                    Email = email,
+                    MediaItemTypes = null
+                };
+            }
+
+            subscriber.MediaItemTypes = types?.Select(x => new SubscriberMediaItemType() { Type = x }).ToArray() ?? new SubscriberMediaItemType[0];
+
+            if (subscriber.Id == 0)
+            {
+                _mediaContext.Add(subscriber);
+            }
+            else
+            {
+                _mediaContext.Update(subscriber);
+            }
+
+            _mediaContext.SaveChanges();
+        }
+
         public void SaveMediaItem(MediaItem mediaItem)
         {
             mediaItem.DateAdded = mediaItem.DateAdded.ToUniversalTime();

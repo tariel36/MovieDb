@@ -28,6 +28,26 @@ namespace MovieDbApi.Core.Controllers
             _converter = converter;
         }
 
+        [HttpPost("options/NotificationEmail")]
+        public void SetNotificationEmail()
+        {
+            MediaItemType[] types = GetMediaItemTypes();
+
+            string email;
+
+            using (TextReader tr = new StreamReader(Request.Body))
+            {
+                email = tr.ReadToEndAsync().Result;
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return;
+            }
+
+            _mediaService.SetNotificationEmail(email, types);
+        }
+
         [HttpPost("search")]
         public List<MediaItem> GetSearch()
         {
@@ -157,7 +177,7 @@ namespace MovieDbApi.Core.Controllers
 
         private MediaItemType[] GetMediaItemTypes()
         {
-            return GetHeader(MediaItemTypes).Split(',').Select(x => (MediaItemType) int.Parse(x)).ToArray();
+            return GetHeader(MediaItemTypes).Split(new [] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => (MediaItemType) int.Parse(x)).ToArray();
         }
 
         private string GetHeader(string key)

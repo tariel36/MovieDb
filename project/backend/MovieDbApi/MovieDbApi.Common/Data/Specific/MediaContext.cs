@@ -30,7 +30,7 @@ namespace MovieDbApi.Common.Data.Specific
         public DbSet<MediaItemTitle> MediaItemTitle { get; set; }
         public DbSet<ScannedPath> ScannedPaths { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
-        public DbSet<SubscriberPath> SubscriberPaths { get; set; }
+        public DbSet<SubscriberMediaItemType> SubscriberMediaItemTypes { get; set; }
         public DbSet<TranslationCache> TranslationCache { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)

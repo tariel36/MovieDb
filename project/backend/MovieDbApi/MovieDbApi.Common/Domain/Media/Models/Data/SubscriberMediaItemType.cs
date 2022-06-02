@@ -2,13 +2,11 @@
 
 namespace MovieDbApi.Common.Domain.Media.Models.Data
 {
-    public class SubscriberPath
+    public class SubscriberMediaItemType
     {
         [Key]
         public int Id { get; set; }
 
-        //public int IdSubscriber { get; set; }
-
-        public string Path { get; set; }
+        public MediaItemType Type { get; set; }
     }
 }

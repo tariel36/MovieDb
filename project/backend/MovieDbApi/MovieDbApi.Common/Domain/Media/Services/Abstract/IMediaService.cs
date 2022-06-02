@@ -22,5 +22,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Abstract
         List<MediaItem> GetSingleElementsByTypes(MediaItemType[] types);
         
         List<MediaItem> SearchElements(string queryText, MediaItemType[] types);
+
+        void SetNotificationEmail(string email, MediaItemType[] types);
     }
 }
