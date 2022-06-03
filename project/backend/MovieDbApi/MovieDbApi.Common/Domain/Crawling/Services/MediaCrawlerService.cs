@@ -10,25 +10,13 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
     {
         private readonly Regex OrderedDirectoryRegex = new Regex("^[0-9]+\\.", RegexOptions.Compiled);
 
-        public MediaCrawlerService(bool useDebug = false)
+        public MediaCrawlerService()
         {
-            if (useDebug)
+            CrawlingContextProvider = (ctx) =>
             {
-                CrawlingContextProvider = ctx =>
-                {
-                    string json = File.ReadAllText("cached_files.json");
-                    ctx = JsonConvert.DeserializeObject<MediaCrawlContext>(json);
-                    return ctx;
-                };
-            }
-            else
-            {
-                CrawlingContextProvider = (ctx) =>
-                {
-                    InnerCrawl(ctx);
-                    return ctx;
-                };
-            }
+                InnerCrawl(ctx);
+                return ctx;
+            };
         }
 
         private Func<MediaCrawlContext, MediaCrawlContext> CrawlingContextProvider { get; }

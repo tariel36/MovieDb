@@ -56,5 +56,7 @@ namespace MovieDbApi.Common.Domain.Media.Models.Monitoring
         public MediaItemType MediaType { get; set; }
 
         public MediaType FileType { get; set; }
+
+        public List<MediaItemLanguage> MediaLanguages { get; set; }
     }
 }

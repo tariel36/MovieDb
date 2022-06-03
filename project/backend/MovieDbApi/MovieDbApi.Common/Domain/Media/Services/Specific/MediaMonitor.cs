@@ -5,11 +5,13 @@ using MovieDbApi.Common.Domain.Apis.Models;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Crawling.Services;
 using MovieDbApi.Common.Domain.Files;
+using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Abstract;
+using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Models;
+using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Specific;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
 using MovieDbApi.Common.Domain.Utility;
-using MovieDbApi.Common.Maintenance;
 
 namespace MovieDbApi.Common.Domain.Media.Services.Specific
 {
@@ -17,21 +19,26 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         : IMediaMonitor
     {
         private readonly IMediaService _mediaService;
-        private readonly IConfiguration _configuration;
 
-        public MediaMonitor(IMediaService mediaContextService,
-            IConfiguration configuration)
+        public MediaMonitor(IConfiguration configuration,
+            IMediaService mediaContextService)
         {
             _mediaService = mediaContextService;
-            _configuration = configuration;
 
             Apis = new MediaApiFactory().GetAllApis(configuration);
             InstructionsProvider = new FileInstructionsProvider();
+            
+            MediaLanguageResolvers = new List<IMediaLanguageResolver>()
+            {
+                new NutaMediaLanguageResolver()
+            };
         }
 
         private List<IMediaDataProvider> Apis { get; }
 
         private FileInstructionsProvider InstructionsProvider { get; }
+
+        private List<IMediaLanguageResolver> MediaLanguageResolvers { get; }
 
         public void Work()
         {
@@ -39,7 +46,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
 
-            MediaCrawlerService crawler = new MediaCrawlerService(false && bool.TryParse(_configuration[ConfigurationKeys.IsDeveloper], out bool isDeveloper) && isDeveloper);
+            MediaCrawlerService crawler = new MediaCrawlerService();
 
             foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path))
             {
@@ -71,6 +78,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                             foreach (MediaIntermediateItem item in grouping)
                             {
+                                MediaLanguageResolverContext mediaLanguageResolverCtx = new MediaLanguageResolverContext()
+                                {
+                                    Path = item.FilePath
+                                };
+
                                 result.Add(new MediaMonitorIntermediateMediaItem()
                                 {
                                     ApiSource = searchResult.ApiSource,
@@ -99,7 +111,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                                     Url = searchResult.Url,
                                     Year = searchResult.Year,
                                     MediaType = searchResult.MediaType,
-                                    FileType = item.Type
+                                    FileType = item.Type,
+                                    MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
                                 });
                             }
 
@@ -137,8 +150,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         private MediaItem ToMediaItem(MediaMonitorIntermediateMediaItem item, bool isGroup, int? groupId = null)
         {
-            ICollection<MediaItemLanguage> languages = null;
-
             ICollection<MediaItemImage> images = item.Images.Select(x => new MediaItemImage(x)).ToList();
             ICollection<MediaItemLink> links = string.IsNullOrWhiteSpace(item.Url) ? null : new List<MediaItemLink>() { new MediaItemLink(item.Url) };
             ICollection<MediaItemTitle> titles = (item.Titles ?? new List<string>()).Select(x => new MediaItemTitle(x)).ToList();
@@ -172,12 +183,12 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 ExternalId = item.ExternalId,
                 Attributes = attributes,
                 Images = images,
-                Languages = languages,
+                Languages = item.MediaLanguages,
                 Links = links,
                 Titles = titles,
                 Group = item.Group,
                 GroupId = groupId,
-                Type = item.MediaType
+                Type = item.MediaType,
             };
 
             return mediaItem;

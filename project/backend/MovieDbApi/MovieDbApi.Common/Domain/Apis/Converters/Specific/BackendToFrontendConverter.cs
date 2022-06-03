@@ -66,6 +66,12 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
 
             MediaItem result = ObjectCopy.ShallowCopy(item);
 
+            if (result.Titles == null)
+            {
+                result.Titles = new List<MediaItemTitle>();
+            }
+
+            result.Titles.Add(new MediaItemTitle(_translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Title)));
             result.Description = _translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Description);
             result.Instructions = GetInstructions(item);
 
