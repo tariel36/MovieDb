@@ -45,7 +45,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             {
                 MediaCrawlContext ctx = new MediaCrawlContext() { Path = rootPath };
 
-                List<MediaIntermediateItem> sortedItems = crawler.Crawl(ctx).Take(200).ToList();
+                List<MediaIntermediateItem> sortedItems = crawler.Crawl(ctx).ToList();
 
                 foreach (IGrouping<string, MediaIntermediateItem> grouping in sortedItems.GroupBy(x => x.Group))
                 {
