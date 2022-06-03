@@ -56,8 +56,8 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
 
             return new ApiMediaItemDetails
             {
-                Duration = details.Runtime,
-                DurationPerEpisode = details.Runtime,
+                Duration = details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty,
+                DurationPerEpisode = details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty,
                 ExternalId = details.ImdbID,
                 Genre = details.Genre,
                 Plot = details.Plot,

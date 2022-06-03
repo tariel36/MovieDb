@@ -10,22 +10,23 @@ namespace MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Specific
         public List<MediaItemLanguage> Resolve(MediaLanguageResolverContext ctx)
         {
             List<MediaItemLanguage> languages = new List<MediaItemLanguage>();
+            string path = ctx.Path.Replace('\\', '/');
 
-            if (ctx.Path.Contains("anime_pl/"))
+            if (path.Contains("anime_pl/"))
             {
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Voice, "Japanese"));
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Subtitles, "Polish"));
             }
-            else if (ctx.Path.Contains("_pl/"))
+            else if (path.Contains("_pl/"))
             {
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Voice, "Polish"));
             }
-            else if (ctx.Path.Contains("anime/"))
+            else if (path.Contains("anime/"))
             {
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Voice, "Japanese"));
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Subtitles, "English"));
             }
-            else if (!ctx.Path.Contains("concert/"))
+            else if (!path.Contains("concert/"))
             {
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Voice, "English"));
                 languages.Add(new MediaItemLanguage(MediaLanguageType.Subtitles, "Polish"));
