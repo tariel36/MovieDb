@@ -9,6 +9,7 @@ using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Notifications.Abstract;
 using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Maintenance;
+using Microsoft.EntityFrameworkCore;
 
 namespace MovieDbApi.Common.Domain.Notifications.Specific
 {
@@ -36,7 +37,7 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
         {
             DateTime today = DateTime.UtcNow;
 
-            List<Subscriber> subscribers = _mediaContext.Subscribers.ToList();
+            List<Subscriber> subscribers = _mediaContext.Subscribers.Include(x => x.MediaItemTypes).ToList();
 
             if (!(subscribers?.Count > 0))
             {
@@ -68,13 +69,15 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
 
             foreach (Subscriber subscriber in subscribers)
             {
-                string title = _translator.Translate(CommonConsts.BaseLanguage, subscriber.Language, "New media");
+                string title = DateTime.Today.ToString("yyyy-MM-dd");
 
                 StringBuilder sbMessage = new StringBuilder();
 
                 sbMessage.AppendLine(title + ":");
 
-                foreach (MediaItem item in translatedItems[subscriber.Language])
+                List<MediaItemType> mediaItemTypes = subscriber.MediaItemTypes?.Select(x => x.Type)?.ToList() ?? new List<MediaItemType>();
+
+                foreach (MediaItem item in translatedItems[subscriber.Language].Where(x => mediaItemTypes.Contains(x.Type)))
                 {
                     sbMessage.AppendLine(item.Title);
                 }
