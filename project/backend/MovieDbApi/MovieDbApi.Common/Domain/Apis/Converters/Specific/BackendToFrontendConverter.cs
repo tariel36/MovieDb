@@ -195,7 +195,12 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 case nameof(MediaMonitorIntermediateMediaItem.Duration):
                 case nameof(MediaMonitorIntermediateMediaItem.DurationPerEpisode):
                 {
-                    TimeSpan ts = TimeSpan.FromMinutes(double.Parse(attr.Value.Replace(',', '.'), CultureInfo.InvariantCulture));
+                    if (!double.TryParse(attr.Value.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out double minutes))
+                    {
+                        return string.Empty;
+                    }
+
+                    TimeSpan ts = TimeSpan.FromMinutes(minutes);
 
                     return string.Equals("0", ts.TotalHours.ToString("0.##", CultureInfo.InvariantCulture).Split('.').FirstOrDefault())
                         ? ts.ToString("mm\\m")
@@ -208,7 +213,12 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 }
                 case nameof(MediaMonitorIntermediateMediaItem.ReleaseDate):
                 {
-                    return DateTime.Parse(attr.Value).ToString("yyyy-MM-dd");
+                    if (!DateTime.TryParse(attr.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    {
+                        return string.Empty;
+                    }
+
+                    return dt.ToString("yyyy-MM-dd");
                 }
                 case nameof(MediaMonitorIntermediateMediaItem.Type):
                 {
@@ -236,6 +246,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 MediaItemType.Cartoon => "generic",
                 MediaItemType.Movie => "generic",
                 MediaItemType.Series => "generic",
+                _ => "unknown"
             };
         }
     }

@@ -20,25 +20,41 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
 
         protected TValue Get<TValue>(string uri, string header = null)
         {
-            string json = Get(uri, header);
-            return JsonConvert.DeserializeObject<TValue>(json);
+            try
+            {
+                string json = Get(uri, header);
+                return JsonConvert.DeserializeObject<TValue>(json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return default(TValue);
+            }
         }
         
         protected string Get(string uri, string header = null)
         {
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            
-            if (!string.IsNullOrWhiteSpace(header))
+            try
             {
-                request.Headers.Add(header);
-            }
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-            using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    request.Headers.Add(header);
+                }
+
+                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
             {
-                return reader.ReadToEnd();
+                Console.WriteLine(ex);
+                return null;
             }
         }
     }

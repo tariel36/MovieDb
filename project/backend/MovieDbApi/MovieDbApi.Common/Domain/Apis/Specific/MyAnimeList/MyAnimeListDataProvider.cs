@@ -23,7 +23,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
             string url = $"https://api.myanimelist.net/v2/anime?q={title}";
 
             MalSearchResult searchResult = Get<MalSearchResult>(url, $"X-MAL-CLIENT-ID: {ApiKey}");
-            Node searchItem = searchResult.Data.FirstOrDefault(x => string.Equals(title, CommonRegex.InvalidPathChars.Replace(x.Node.Title, string.Empty)))?.Node;
+            Node searchItem = searchResult?.Data?.FirstOrDefault(x => string.Equals(title, CommonRegex.InvalidPathChars.Replace(x.Node.Title, string.Empty)))?.Node;
 
             if (searchItem == null)
             {
