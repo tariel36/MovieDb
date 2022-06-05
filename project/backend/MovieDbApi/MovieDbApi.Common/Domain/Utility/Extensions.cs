@@ -36,6 +36,17 @@ namespace MovieDbApi.Common.Domain.Utility
             return items.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
         }
 
+        public static KeyValuePair<TKey, TValue> EnsureKey<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, Func<TValue> defaultValueProvider)
+        {
+            if (!dict.TryGetValue(key, out TValue value))
+            {
+                value = defaultValueProvider == null ? default : defaultValueProvider() ?? default;
+                dict[key] = value;
+            }
+
+            return KeyValuePair.Create(key, value);
+        }
+
         public static HashSet<TValue> ToHashSet<TItem, TValue>(this IEnumerable<TItem> enumerable, Func<TItem, TValue> selector, bool throwOnDuplicate = false)
         {
             HashSet<TValue> result = new HashSet<TValue>();

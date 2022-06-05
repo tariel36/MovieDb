@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Web;
+using MovieDbApi.Common.Data.Caches.Abstract;
 using MovieDbApi.Common.Data.Specific;
 using MovieDbApi.Common.Domain.Apis.Converters.Abstract;
 using MovieDbApi.Common.Domain.Media.Models.Data;
@@ -17,11 +18,15 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
     {
         private readonly MediaContext _mediaContext;
         private readonly IMediaService _mediaService;
+        private readonly ITranslationItemCache _translationItemCache;
 
-        public GoogleTranslate(MediaContext mediaContext, IMediaService mediaService)
+        public GoogleTranslate(MediaContext mediaContext,
+            IMediaService mediaService,
+            ITranslationItemCache translationItemCache)
         {
             _mediaContext = mediaContext;
             _mediaService = mediaService;
+            _translationItemCache = translationItemCache;
         }
 
         public string Translate(string from, string to, string value)
@@ -51,7 +56,8 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
 
         private string GetCachedValue(string targetLanguage, string value)
         {
-            return _mediaService.GetTranslationCache(targetLanguage, value)?.Target;
+            //return _mediaService.GetTranslationCache(targetLanguage, value)?.Target;
+            return _translationItemCache.GetTranslation(targetLanguage, value);
         }
 
         private string QueryTranslation(string from, string to, string value)
@@ -83,6 +89,8 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 {
                     _mediaContext.Add(new TranslationCache() { Language = to, Source = value, Target = translation });
                     _mediaContext.SaveChanges();
+
+                    _translationItemCache.Set(to, value, translation);
                 }
 
                 return translation;

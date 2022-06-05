@@ -1,6 +1,10 @@
+using MovieDbApi.Common.Data.Caches.Abstract;
+using MovieDbApi.Common.Data.Caches.Specific;
 using MovieDbApi.Common.Data.Specific;
 using MovieDbApi.Common.Domain.Apis.Converters.Abstract;
 using MovieDbApi.Common.Domain.Apis.Converters.Specific;
+using MovieDbApi.Common.Domain.Compression.Abstract;
+using MovieDbApi.Common.Domain.Compression.Specific;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
 using MovieDbApi.Common.Domain.Media.Services.Specific;
 using MovieDbApi.Common.Domain.Notifications.Abstract;
@@ -22,6 +26,8 @@ builder.Services.AddScoped<ITranslator, GoogleTranslate>();
 builder.Services.AddScoped<INotificationService, EmailNotificationService>();
 
 builder.Services.AddSingleton<ServicesContainer, ServicesContainer>();
+builder.Services.AddSingleton<IHashProvider, Md5HashProvider>();
+builder.Services.AddSingleton<ITranslationItemCache, TranslationItemCache>();
 
 WebApplication app = builder.Build();
 
