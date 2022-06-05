@@ -77,7 +77,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                     MediaTypeResolverContext mediaTypeResolverCtx = new MediaTypeResolverContext()
                     {
-                        Path = grouping.First().FilePath
+                        Path = firstItem.FilePath
                     };
 
                     MediaItemType type = MediaTypeResolverCollection.Select(x => x.Resolve(mediaTypeResolverCtx)).FirstOrDefault(x => x != MediaItemType.Unknown);
