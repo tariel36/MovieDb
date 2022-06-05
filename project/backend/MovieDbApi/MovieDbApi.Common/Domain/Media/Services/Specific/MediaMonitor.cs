@@ -9,6 +9,7 @@ using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Abstract;
 using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Models;
 using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Specific;
 using MovieDbApi.Common.Domain.Media.MediaTypeResolvers.Abstract;
+using MovieDbApi.Common.Domain.Media.MediaTypeResolvers.Models;
 using MovieDbApi.Common.Domain.Media.MediaTypeResolvers.Specific;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
@@ -73,11 +74,17 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     }
 
                     string title = ClearTitle(Path.GetFileName(grouping.Key));
-                    MediaType type = MediaTypeResolverCollection.Select(x => x.Resolve()).FirstOrDefault(x => x != MediaType.Unknown);
+
+                    MediaTypeResolverContext mediaTypeResolverCtx = new MediaTypeResolverContext()
+                    {
+                        Path = grouping.First().FilePath
+                    };
+
+                    MediaItemType type = MediaTypeResolverCollection.Select(x => x.Resolve(mediaTypeResolverCtx)).FirstOrDefault(x => x != MediaItemType.Unknown);
 
                     int groupCount = grouping.Count();
 
-                    foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaType.Unknown || x.IsSupported(type)))
+                    foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaItemType.Unknown || x.IsSupported(type)))
                     {
                         // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
                         ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
