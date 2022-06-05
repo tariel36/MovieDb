@@ -1,17 +1,31 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using MovieDbApi.Common.Data.Specific;
+using MovieDbApi.Common.Domain.Compression.Abstract;
+using MovieDbApi.Common.Domain.Compression.Specific;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Crawling.Services;
+using MovieDbApi.Common.Domain.Media.Models.Data;
 
-Console.WriteLine("Hello, World!");
+IConfigurationRoot configuration = new ConfigurationBuilder()
+    .SetBasePath(Path.GetFullPath(@"../../../../MovieDbApi.Core"))
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+IHashProvider hashProvider = new Md5HashProvider();
+
+MediaContext ctx = new MediaContext(configuration);
 
 
-var crawler = new MediaCrawlerService();
-
-var ctx = new MediaCrawlContext
+List<TranslationCache> translations = ctx.TranslationCache.ToList();
+foreach (var translation in translations)
 {
-};
+    if (string.IsNullOrWhiteSpace(translation.SourceHash))
+    {
+        translation.SourceHash = hashProvider.Get(translation.Source);
+        ctx.Update(translation);
+        ctx.SaveChanges();
+    }
+}
 
-crawler.Crawl(ctx);
-
-
-Console.WriteLine("done");
+Console.WriteLine("Done");
