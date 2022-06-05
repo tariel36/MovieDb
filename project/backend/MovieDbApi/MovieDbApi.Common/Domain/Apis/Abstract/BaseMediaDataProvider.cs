@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System.Collections.ObjectModel;
+using System.Net;
 using MovieDbApi.Common.Domain.Apis.Models;
+using MovieDbApi.Common.Domain.Media.Models.Data;
 using Newtonsoft.Json;
 
 namespace MovieDbApi.Common.Domain.Apis.Abstract
@@ -7,16 +9,24 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
     public abstract class BaseMediaDataProvider
         : IMediaDataProvider
     {
-        protected BaseMediaDataProvider(int order)
+        protected BaseMediaDataProvider(int order, IEnumerable<MediaItemType> supportedTypes = null)
         {
             Order = order;
+            SupportedTypes = new ReadOnlyCollection<MediaItemType>(supportedTypes?.ToList() ?? new List<MediaItemType>());
         }
 
         public int Order { get; }
 
+        private IReadOnlyCollection<MediaItemType> SupportedTypes { get; }
+
         public abstract SearchResult SearchByTitle(string title);
 
         public abstract ApiMediaItemDetails SearchDetailsByTitle(string title);
+
+        public bool IsSupported(MediaItemType type)
+        {
+            return SupportedTypes.Contains(type);
+        }
 
         protected TValue Get<TValue>(string uri, string header = null)
         {

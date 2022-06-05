@@ -8,6 +8,8 @@ using MovieDbApi.Common.Domain.Files;
 using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Abstract;
 using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Models;
 using MovieDbApi.Common.Domain.Media.MediaLanguageResolvers.Specific;
+using MovieDbApi.Common.Domain.Media.MediaTypeResolvers.Abstract;
+using MovieDbApi.Common.Domain.Media.MediaTypeResolvers.Specific;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
@@ -32,6 +34,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             {
                 new NutaMediaLanguageResolver()
             };
+
+            MediaTypeResolverCollection = new List<IMediaTypeResolver>()
+            {
+                new NutaMediaTypeResolver()
+            };
         }
 
         private List<IMediaDataProvider> Apis { get; }
@@ -39,6 +46,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         private FileInstructionsProvider InstructionsProvider { get; }
 
         private List<IMediaLanguageResolver> MediaLanguageResolvers { get; }
+
+        private List<IMediaTypeResolver> MediaTypeResolverCollection { get; }
 
         public void Work()
         {
@@ -64,10 +73,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     }
 
                     string title = ClearTitle(Path.GetFileName(grouping.Key));
+                    MediaType type = MediaTypeResolverCollection.Select(x => x.Resolve()).FirstOrDefault(x => x != MediaType.Unknown);
 
                     int groupCount = grouping.Count();
 
-                    foreach (IMediaDataProvider? api in Apis)
+                    foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaType.Unknown || x.IsSupported(type)))
                     {
                         // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
                         ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);

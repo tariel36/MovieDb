@@ -8,6 +8,7 @@
         Series = 2,
         Movie = 3,
         Cartoon = 4,
+        Concert = 5,
 
         MaxValue
     }

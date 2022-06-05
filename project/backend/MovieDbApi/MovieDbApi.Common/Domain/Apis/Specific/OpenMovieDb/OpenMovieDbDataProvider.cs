@@ -12,7 +12,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
         : BaseMediaDataProvider
     {
         public OpenMovieDbDataProvider(string apiKey)
-            : base(99)
+            : base(99, new[] { MediaItemType.Cartoon, MediaItemType.Movie, MediaItemType.Series })
         {
             ApiKey = apiKey;
         }

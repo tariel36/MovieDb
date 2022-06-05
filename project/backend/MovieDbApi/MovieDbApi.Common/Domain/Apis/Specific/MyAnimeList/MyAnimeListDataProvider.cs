@@ -11,7 +11,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
         : BaseMediaDataProvider
     {
         public MyAnimeListDataProvider(string apiKey)
-            : base(1)
+            : base(1, new [] { MediaItemType.Anime })
         {
             ApiKey = apiKey;
         }
