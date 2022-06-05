@@ -33,6 +33,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
             Dictionary<string, (string directory, List<MediaIntermediateItem> items)> groups = new Dictionary<string, (string directory, List<MediaIntermediateItem> items)>();
 
+            Dictionary<string, List<MediaCrawlerItem>>  potentialGroups = GetPorentialGroups(ctx);
+
             foreach (MediaCrawlerItem item in ctx.Items)
             {
                 if (item.Groups?.Count > 0)
@@ -65,10 +67,19 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                     groupItems.Add(intermediateItem);
                     result.Add(intermediateItem);
                 }
-                
             }
 
             return result;
+        }
+
+        private Dictionary<string, List<MediaCrawlerItem>> GetPorentialGroups(MediaCrawlContext ctx)
+        {
+            return ctx.Items
+                .Select<MediaCrawlerItem, (string path, MediaCrawlerItem item)>(x => (x.Directory.Replace(ctx.Path, string.Empty), x))
+                .GroupBy(x => Path.GetDirectoryName(x.path).Replace("\\", string.Empty).Replace("/", string.Empty))
+                .Where(x => x.All(y => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(y.item.Directory))))
+                .ToDictionary(k => k.Key, v => v.Select(x => x.item).ToList())
+                ;
         }
 
         private void InnerCrawl(MediaCrawlContext ctx)
