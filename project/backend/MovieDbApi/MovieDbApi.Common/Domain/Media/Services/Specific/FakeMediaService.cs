@@ -46,6 +46,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             throw new NotImplementedException();
         }
 
+        public TranslationCache GetTranslationCache(string targetLanguage, string value)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SaveMediaItem(MediaItem mediaItem)
         {
             MediaItemsCollection.Add(mediaItem);

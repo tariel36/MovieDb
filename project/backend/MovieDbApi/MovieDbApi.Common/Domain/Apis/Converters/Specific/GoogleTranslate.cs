@@ -4,6 +4,8 @@ using System.Web;
 using MovieDbApi.Common.Data.Specific;
 using MovieDbApi.Common.Domain.Apis.Converters.Abstract;
 using MovieDbApi.Common.Domain.Media.Models.Data;
+using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Media.Services.Specific;
 using MovieDbApi.Common.Domain.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,10 +16,12 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
         : ITranslator
     {
         private readonly MediaContext _mediaContext;
+        private readonly IMediaService _mediaService;
 
-        public GoogleTranslate(MediaContext mediaContext)
+        public GoogleTranslate(MediaContext mediaContext, IMediaService mediaService)
         {
             _mediaContext = mediaContext;
+            _mediaService = mediaService;
         }
 
         public string Translate(string from, string to, string value)
@@ -47,7 +51,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
 
         private string GetCachedValue(string targetLanguage, string value)
         {
-            return _mediaContext.TranslationCache.FirstOrDefault(x => x.Language == targetLanguage && x.Source == value)?.Target;
+            return _mediaService.GetTranslationCache(targetLanguage, value)?.Target;
         }
 
         private string QueryTranslation(string from, string to, string value)

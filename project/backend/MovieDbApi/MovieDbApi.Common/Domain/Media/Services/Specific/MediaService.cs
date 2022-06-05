@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieDbApi.Common.Data.Specific;
+using MovieDbApi.Common.Domain.Compression.Abstract;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Dto;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
@@ -10,15 +11,36 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         : IMediaService
     {
         private readonly MediaContext _mediaContext;
+        private readonly IHashProvider _hashProvider;
 
-        public MediaService(MediaContext context)
+        public MediaService(MediaContext context, IHashProvider hashProvider)
         {
             _mediaContext = context;
+            _hashProvider = hashProvider;
         }
 
         public IQueryable<ScannedPath> ScannedPaths { get { return _mediaContext.ScannedPaths; } }
 
         public IQueryable<MediaItem> MediaItems { get { return _mediaContext.MediaItems; } }
+
+        public TranslationCache SaveTranslationCache(TranslationCache item)
+        {
+            if (string.IsNullOrWhiteSpace(item.SourceHash))
+            {
+                item.SourceHash = _hashProvider.Get(item.Source);
+            }
+
+            _mediaContext.Add(item);
+            _mediaContext.SaveChanges();
+
+            return item;
+        }
+
+        public TranslationCache GetTranslationCache(string targetLanguage, string value)
+        {
+            string sourceHash = _hashProvider.Get(value);
+            return _mediaContext.TranslationCache.FirstOrDefault(x => x.Language == targetLanguage && x.SourceHash == sourceHash);
+        }
 
         public void SetNotificationEmail(string email, string language, MediaItemType[] types)
         {
