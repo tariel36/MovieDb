@@ -84,11 +84,15 @@
 
 .small-title {
     margin-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     display: flex;
     align-items: center;
     justify-items: center;
     justify-content: center;
     align-content: center;
+    word-break: keep-all;
+    white-space: nowrap;
 }
 
 .small-content {

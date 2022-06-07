@@ -7,7 +7,7 @@ namespace MovieDbApi.Common.Domain.Apis.Models
         public string ApiSource { get; set; }
 
         public string Duration { get; set; }
-        
+
         public string DurationPerEpisode { get; set; }
 
         public string ExternalId { get; set; }
@@ -27,7 +27,7 @@ namespace MovieDbApi.Common.Domain.Apis.Models
         public string Staff { get; set; }
 
         public string Title { get; set; }
-        
+
         public List<string> Titles { get; set; }
 
         public string Type { get; set; }

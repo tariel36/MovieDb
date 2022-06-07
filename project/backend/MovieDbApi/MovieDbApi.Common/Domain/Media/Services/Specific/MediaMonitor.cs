@@ -91,7 +91,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                                 string title = ClearTitle(Path.GetFileName(Path.GetDirectoryName(itemToProcess.FilePath)));
 
                                 // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
-                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
+                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title) ?? GetDefault(title, itemToProcess);
 
                                 if (searchResult != null)
                                 {
@@ -105,7 +105,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                                 string title = ClearTitle(Path.GetFileName(grouping.Key));
 
                                 // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
-                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
+                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title) ?? GetDefault(title, grouping.First());
 
                                 if (searchResult != null)
                                 {
@@ -114,6 +114,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                                     foreach (MediaIntermediateItem item in grouping)
                                     {
                                         result.Add(ToMediaMonitorIntermediateMediaItem(groupCount, searchResult, currentChapter, item));
+                                        currentChapter++;
                                     }
 
                                     break;
@@ -164,7 +165,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             {
                 ApiSource = searchResult.ApiSource,
                 // This is naive numbering, because by default, the results may not be sorted properly.
-                ChapterTitle = groupCount == 1 ? searchResult.Title : $"{searchResult.Title} - {currentChapter++}/{groupCount}",
+                ChapterTitle = groupCount == 1 ? searchResult.Title : $"{searchResult.Title} - {currentChapter}/{groupCount}",
                 Directory = item.Directory,
                 Duration = searchResult.Duration,
                 DurationPerEpisode = searchResult.DurationPerEpisode,
@@ -255,6 +256,30 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 .Replace(CommonRegex.OrderedTitleRegex, string.Empty)
                 .Trim()
                 ;
+        }
+
+        private ApiMediaItemDetails GetDefault(string title, MediaIntermediateItem item)
+        {
+            return new ApiMediaItemDetails()
+            {
+                ApiSource = "Default",
+                Duration = string.Empty,
+                DurationPerEpisode = string.Empty,
+                ExternalId = string.Empty,
+                Genre = string.Empty,
+                Plot = string.Empty,
+                Poster = item.MainImage ?? item.Images?.FirstOrDefault(),
+                Rated = string.Empty,
+                Rating = string.Empty,
+                ReleaseDate = string.Empty,
+                Staff = string.Empty,
+                Title = title,
+                Titles = new List<string>(),
+                Type = string.Empty,
+                Url = string.Empty,
+                Year = string.Empty,
+                MediaType = MediaItemType.Unknown,
+            };
         }
     }
 }
