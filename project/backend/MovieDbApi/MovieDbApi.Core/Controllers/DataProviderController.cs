@@ -135,7 +135,13 @@ namespace MovieDbApi.Core.Controllers
 
             if (grp != null)
             {
-                grp.Items = grp.Items.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang))).ToList();
+                grp.Items = grp.Items
+                    .Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang)))
+                    // This is another naive ordering. If folder/file structure is well mantained
+                    // it shouldn't be issue. Otherwise another ordering attribute will have to be
+                    // implemented.
+                    .OrderBy(x => x.Id)
+                    .ToList();
                 grp.GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(grp.GroupingItem, CommonConsts.BaseLanguage, targetLang));
             }
 
