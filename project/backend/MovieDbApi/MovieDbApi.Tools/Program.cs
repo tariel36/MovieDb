@@ -6,6 +6,8 @@ using MovieDbApi.Common.Domain.Compression.Specific;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Crawling.Services;
 using MovieDbApi.Common.Domain.Media.Models.Data;
+using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Media.Services.Specific;
 
 IConfigurationRoot configuration = new ConfigurationBuilder()
     .SetBasePath(Path.GetFullPath(@"../../../../MovieDbApi.Core"))
@@ -16,16 +18,26 @@ IHashProvider hashProvider = new Md5HashProvider();
 
 MediaContext ctx = new MediaContext(configuration);
 
+//List<TranslationCache> translations = ctx.TranslationCache.ToList();
+//foreach (var translation in translations)
+//{
+//    if (string.IsNullOrWhiteSpace(translation.SourceHash))
+//    {
+//        translation.SourceHash = hashProvider.Get(translation.Source);
+//        ctx.Update(translation);
+//        ctx.SaveChanges();
+//    }
+//}
 
-List<TranslationCache> translations = ctx.TranslationCache.ToList();
-foreach (var translation in translations)
-{
-    if (string.IsNullOrWhiteSpace(translation.SourceHash))
-    {
-        translation.SourceHash = hashProvider.Get(translation.Source);
-        ctx.Update(translation);
-        ctx.SaveChanges();
-    }
-}
+//MediaCrawlerService crawler = new MediaCrawlerService();
+//crawler.Crawl(new MediaCrawlContext()
+//{
+//    Path = @"\\Nuta-NAS\nutka\s\media\cartoons_pl"
+//});
+
+IMediaService mediaService = new MediaService(ctx, hashProvider);
+
+MediaMonitor monitor = new MediaMonitor(configuration, mediaService);
+monitor.Work();
 
 Console.WriteLine("Done");
