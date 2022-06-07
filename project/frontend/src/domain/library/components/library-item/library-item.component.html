@@ -4,8 +4,7 @@
             <img class="image" [src]="mediaItem.image" />
         </div>
         <div class="title">
-            <div class="inner-title">{{title}}</div>
-            <div *ngIf="hasMultipleItems" class="items-count">({{mediaItem.itemsCount}}&nbsp;{{ 'video' | translate }})</div>
+            <div class="inner-title">{{title}}<span *ngIf="hasMultipleItems">&nbsp;({{mediaItem.itemsCount}}&nbsp;{{ 'video' | translate }})</span></div>
         </div>
     </div>
 </div>
