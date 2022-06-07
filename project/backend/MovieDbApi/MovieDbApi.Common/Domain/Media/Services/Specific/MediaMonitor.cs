@@ -66,74 +66,59 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                 foreach (IGrouping<string, MediaIntermediateItem> grouping in sortedItems.GroupBy(x => x.Group))
                 {
-                    MediaIntermediateItem? firstItem = grouping.First();
-                    
-                    if (existingFiles.Contains(firstItem.FilePath))
+                    List<MediaIntermediateItem> itemsToProcess = GetItemsToProcess(grouping);
+
+                    foreach (MediaIntermediateItem itemToProcess in itemsToProcess)
                     {
-                        continue;
-                    }
-
-                    string title = ClearTitle(Path.GetFileName(grouping.Key));
-
-                    MediaTypeResolverContext mediaTypeResolverCtx = new MediaTypeResolverContext()
-                    {
-                        Path = firstItem.FilePath
-                    };
-
-                    MediaItemType type = MediaTypeResolverCollection.Select(x => x.Resolve(mediaTypeResolverCtx)).FirstOrDefault(x => x != MediaItemType.Unknown);
-
-                    int groupCount = grouping.Count();
-
-                    foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaItemType.Unknown || x.IsSupported(type)))
-                    {
-                        // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
-                        ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
-
-                        if (searchResult != null)
+                        if (existingFiles.Contains(itemToProcess.FilePath))
                         {
-                            int currentChapter = 1;
+                            continue;
+                        }
 
-                            foreach (MediaIntermediateItem item in grouping)
+                        MediaTypeResolverContext mediaTypeResolverCtx = new MediaTypeResolverContext()
+                        {
+                            Path = itemToProcess.FilePath
+                        };
+
+                        MediaItemType type = MediaTypeResolverCollection.Select(x => x.Resolve(mediaTypeResolverCtx)).FirstOrDefault(x => x != MediaItemType.Unknown);
+
+                        int groupCount = grouping.Count();
+
+                        foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaItemType.Unknown || x.IsSupported(type)))
+                        {
+                            if (itemsToProcess.Count > 1)
                             {
-                                MediaLanguageResolverContext mediaLanguageResolverCtx = new MediaLanguageResolverContext()
-                                {
-                                    Path = item.FilePath
-                                };
+                                string title = ClearTitle(Path.GetFileName(Path.GetDirectoryName(itemToProcess.FilePath)));
 
-                                result.Add(new MediaMonitorIntermediateMediaItem()
+                                // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
+                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
+
+                                if (searchResult != null)
                                 {
-                                    ApiSource = searchResult.ApiSource,
-                                    // This is naive numbering, because by default, the results may not be sorted properly.
-                                    ChapterTitle = groupCount == 1 ? searchResult.Title : $"{searchResult.Title} - {currentChapter++}/{groupCount}",
-                                    Directory = item.Directory,
-                                    Duration = searchResult.Duration,
-                                    DurationPerEpisode = searchResult.DurationPerEpisode,
-                                    ExternalId = searchResult.ExternalId,
-                                    Genre = searchResult.Genre,
-                                    GroupCount = grouping.Count().ToString(),
-                                    FilePath = item.FilePath,
-                                    Group = item.Group,
-                                    Images = (item.Images ?? new List<string>()).Concat(new[] { searchResult.Poster, item.MainImage }).Where(x => !string.IsNullOrWhiteSpace(x)).ToList(),
-                                    MainImage = item.MainImage,
-                                    Plot = searchResult.Plot,
-                                    Rated = searchResult.Rated,
-                                    Rating = searchResult.Rating,
-                                    ReleaseDate = searchResult.ReleaseDate,
-                                    SelectedPoster = Extensions.GetNonEmpty(searchResult.Poster, item.MainImage, item.Images),
-                                    Staff = searchResult.Staff,
-                                    Title = searchResult.Title,
-                                    Titles = searchResult.Titles,
-                                    Type = searchResult.Type,
-                                    WebPoster = searchResult.Poster,
-                                    Url = searchResult.Url,
-                                    Year = searchResult.Year,
-                                    MediaType = searchResult.MediaType,
-                                    FileType = item.Type,
-                                    MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
-                                });
+                                    result.Add(ToMediaMonitorIntermediateMediaItem(1, searchResult, 1, itemToProcess));
+
+                                    break;
+                                }
                             }
+                            else
+                            {
+                                string title = ClearTitle(Path.GetFileName(grouping.Key));
 
-                            break;
+                                // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
+                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title);
+
+                                if (searchResult != null)
+                                {
+                                    int currentChapter = 1;
+
+                                    foreach (MediaIntermediateItem item in grouping)
+                                    {
+                                        result.Add(ToMediaMonitorIntermediateMediaItem(groupCount, searchResult, currentChapter, item));
+                                    }
+
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -163,6 +148,59 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     _mediaService.SaveMediaItem(ToMediaItem(item, false, groupId));
                 }
             }
+        }
+
+        private MediaMonitorIntermediateMediaItem ToMediaMonitorIntermediateMediaItem(int groupCount,
+            ApiMediaItemDetails searchResult,
+            int currentChapter,
+            MediaIntermediateItem item)
+        {
+            MediaLanguageResolverContext mediaLanguageResolverCtx = new MediaLanguageResolverContext()
+            {
+                Path = item.FilePath
+            };
+
+            return new MediaMonitorIntermediateMediaItem()
+            {
+                ApiSource = searchResult.ApiSource,
+                // This is naive numbering, because by default, the results may not be sorted properly.
+                ChapterTitle = groupCount == 1 ? searchResult.Title : $"{searchResult.Title} - {currentChapter++}/{groupCount}",
+                Directory = item.Directory,
+                Duration = searchResult.Duration,
+                DurationPerEpisode = searchResult.DurationPerEpisode,
+                ExternalId = searchResult.ExternalId,
+                Genre = searchResult.Genre,
+                GroupCount = groupCount.ToString(),
+                FilePath = item.FilePath,
+                Group = item.Group,
+                Images = (item.Images ?? new List<string>()).Concat(new[] { searchResult.Poster, item.MainImage }).Where(x => !string.IsNullOrWhiteSpace(x)).ToList(),
+                MainImage = item.MainImage,
+                Plot = searchResult.Plot,
+                Rated = searchResult.Rated,
+                Rating = searchResult.Rating,
+                ReleaseDate = searchResult.ReleaseDate,
+                SelectedPoster = Extensions.GetNonEmpty(searchResult.Poster, item.MainImage, item.Images),
+                Staff = searchResult.Staff,
+                Title = searchResult.Title,
+                Titles = searchResult.Titles,
+                Type = searchResult.Type,
+                WebPoster = searchResult.Poster,
+                Url = searchResult.Url,
+                Year = searchResult.Year,
+                MediaType = searchResult.MediaType,
+                FileType = item.Type,
+                MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
+            };
+        }
+
+        private List<MediaIntermediateItem> GetItemsToProcess(IGrouping<string, MediaIntermediateItem> grouping)
+        {
+            MediaIntermediateItem firstItem = grouping.First();
+
+            return firstItem.Type == MediaType.Franchise
+                ? grouping.ToList()
+                : new List<MediaIntermediateItem>() { firstItem }
+                ;
         }
 
         private MediaItem ToMediaItem(MediaMonitorIntermediateMediaItem item, bool isGroup, int? groupId = null)

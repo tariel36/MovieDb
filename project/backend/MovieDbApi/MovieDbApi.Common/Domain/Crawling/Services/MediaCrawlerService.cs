@@ -33,7 +33,36 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
             Dictionary<string, (string directory, List<MediaIntermediateItem> items)> groups = new Dictionary<string, (string directory, List<MediaIntermediateItem> items)>();
 
-            Dictionary<string, List<MediaCrawlerItem>>  potentialGroups = GetPorentialGroups(ctx);
+            Dictionary<string, (string directory, List<MediaCrawlerItem> items)>  potentialGroups = GetPotentialGroups(ctx);
+
+            if (potentialGroups?.Count > 0)
+            {
+                foreach (KeyValuePair<string, (string directory, List<MediaCrawlerItem> items)> group in potentialGroups)
+                {
+                    foreach (MediaCrawlerItem item in group.Value.items)
+                    {
+                        ctx.Items.Remove(item);
+                    }
+
+                    List<string> images = group.Value
+                        .items
+                        .Where(x => x.Images != null)
+                        .SelectMany(x => x.Images)
+                        .Distinct()
+                        .ToList();
+
+                    ctx.Items.Add(new MediaCrawlerItem()
+                    {
+                        Directory = group.Value.directory,
+                        Groups = null,
+                        Images = images,
+                        IsGrouping = true,
+                        MainImage = images.FirstOrDefault(),
+                        Type = MediaType.Franchise,
+                        Videos = group.Value.items.SelectMany(x => x.Videos).Distinct().ToList()
+                    });
+                }
+            }
 
             foreach (MediaCrawlerItem item in ctx.Items)
             {
@@ -72,13 +101,13 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
             return result;
         }
 
-        private Dictionary<string, List<MediaCrawlerItem>> GetPorentialGroups(MediaCrawlContext ctx)
+        private Dictionary<string, (string directory, List<MediaCrawlerItem> items)> GetPotentialGroups(MediaCrawlContext ctx)
         {
             return ctx.Items
                 .Select<MediaCrawlerItem, (string path, MediaCrawlerItem item)>(x => (x.Directory.Replace(ctx.Path, string.Empty), x))
                 .GroupBy(x => Path.GetDirectoryName(x.path).Replace("\\", string.Empty).Replace("/", string.Empty))
                 .Where(x => x.All(y => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(y.item.Directory))))
-                .ToDictionary(k => k.Key, v => v.Select(x => x.item).ToList())
+                .ToDictionary(k => k.Key, v => (Path.GetDirectoryName(v.First().item.Directory), v.Select(x => x.item).ToList()))
                 ;
         }
 

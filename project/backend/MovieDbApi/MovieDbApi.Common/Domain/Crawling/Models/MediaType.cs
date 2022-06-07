@@ -7,6 +7,7 @@
         Bdvm = 1,
         Video = 2,
         Season = 3,
+        Franchise = 4,
 
         MaxValue,
     }
