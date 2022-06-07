@@ -13,6 +13,7 @@ export class LibraryItemComponent implements OnInit {
     @Input() public isChapter: boolean = false;
 
     public title: string = '';
+    public hasMultipleItems = false;
 
     constructor(private readonly router: Router) { }
     
@@ -21,11 +22,12 @@ export class LibraryItemComponent implements OnInit {
             ? this.mediaItem.chapterTitle
             : this.mediaItem.title
             ;
+
+        this.hasMultipleItems = this.mediaItem.itemsCount > 1;
     }
 
     public onClick() {
         this.router.routeReuseStrategy.shouldReuseRoute = () => false;
         this.router.navigateByUrl(`/details/${this.mediaItem.id}`, { state: { isChapter: this.isChapter }});
     }
-
 }

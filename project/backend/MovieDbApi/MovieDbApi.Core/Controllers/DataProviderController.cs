@@ -107,6 +107,7 @@ namespace MovieDbApi.Core.Controllers
 
                 if (groupingItem != null)
                 {
+                    groupingItem.ItemsCount = grouping.Count() - 1;
                     result.Add(groupingItem);
                 }
                 else

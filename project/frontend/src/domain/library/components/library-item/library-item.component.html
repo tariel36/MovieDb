@@ -5,6 +5,7 @@
         </div>
         <div class="title">
             <div class="inner-title">{{title}}</div>
+            <div *ngIf="hasMultipleItems" class="items-count">({{mediaItem.itemsCount}}&nbsp;{{ 'video' | translate }})</div>
         </div>
     </div>
 </div>

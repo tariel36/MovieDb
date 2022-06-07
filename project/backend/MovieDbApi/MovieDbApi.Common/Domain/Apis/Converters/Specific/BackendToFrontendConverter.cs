@@ -74,6 +74,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
             result.Titles.Add(new MediaItemTitle(_translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Title)));
             result.Description = _translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Description);
             result.Instructions = GetInstructions(item);
+            result.ItemsCount = item.ItemsCount;
 
             if (item.Attributes?.Count > 0)
             {

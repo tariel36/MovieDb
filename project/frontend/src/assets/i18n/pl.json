@@ -37,5 +37,6 @@
     "instructions-bluray-6": "Filmy w tym formacie to czysta kopia dysku Blu-Ray, więc wszystkie filmiki wprowadzające, reklamy, itp. muszą sie odtworzyć. Na samym końcu plik dociera do menu (tak jakby był odtwarzan na normalnym urządzeniu). W takiej sytuacji należy wcisnąć `na ekranie` przycisk `Play` (albo odtwórz czy inne). Napisy i język dźwięku można zmienić w standardowy sposób.",
     "email": "e-mail",
     "cancel": "Anuluj",
+    "video": "video",
     "notifications-instructions": "Jeśli chcesz otrzymywać powiadomienia o nowych filmach, serialach czy innych mediach, które obserwujesz to podaj swój adres email."
 }

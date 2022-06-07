@@ -20,4 +20,5 @@ export interface IMediaItem {
     links: IMediaItemLink[];
     titles: IMediaItemTitle[];
     languages: IMediaItemLanguage[];
+    itemsCount: number;
 }

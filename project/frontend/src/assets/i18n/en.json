@@ -37,5 +37,6 @@
     "instructions-bluray-6": "Movies in this format are pure copy of Blu-Ray discs, so all the intros, advertisements etc. can't be skipped. In the end, you will reach the movie menu (it's the same like you would play it on physical device). In that case you have to click `on the screen` the proper `play` button (or similar). Subtitles and audio language can be changed the usual way.",
     "email": "e-mail",
     "Cancel": "Cancel",
+    "video": "video",
     "notifications-instructions": "If you want to receive notifications about new movies, series or other media, please provide your e-mail address."
 }

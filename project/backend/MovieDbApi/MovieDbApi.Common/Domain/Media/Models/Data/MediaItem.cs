@@ -49,5 +49,8 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
         //public virtual ICollection<MediaItemRelation> Relations { get; set; }
 
         public virtual ICollection<MediaItemTitle> Titles { get; set; }
+
+        [NotMapped]
+        public int ItemsCount { get; set; }
     }
 }

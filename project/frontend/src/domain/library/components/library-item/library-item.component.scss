@@ -1,4 +1,5 @@
 $titleHeight: 50px;
+$chaptersHeight: 10px;
 
 .library-item {
     display: flex;
@@ -24,6 +25,7 @@ $titleHeight: 50px;
     height: $titleHeight;
 
     display: flex;
+    flex-direction: column;
 
     align-content: center;
     justify-content: center;
@@ -47,7 +49,7 @@ $titleHeight: 50px;
 }
 
 .image-container {
-    height: calc(100% - #{$titleHeight});
+    height: calc(100% - #{$titleHeight} - #{$chaptersHeight});
 }
 
 .image {
@@ -66,4 +68,19 @@ $titleHeight: 50px;
     overflow: hidden;
     padding: 5px;
     background: rgba(204, 204, 204, 0.9);
+}
+
+.items-count {
+    height: $chaptersHeight;
+
+    display: flex;
+
+    font-size: 10px;
+
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    vertical-align: middle;
+    text-align: center;
 }
