@@ -240,6 +240,11 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 return "bdvm";
             }
 
+            if (item.IsGrouping)
+            {
+                return null;
+            }
+
             return item.Type switch
             {
                 MediaItemType.Anime => "anime",
