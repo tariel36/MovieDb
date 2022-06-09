@@ -6,7 +6,7 @@ import { IMediaItemAttribute } from "./media-item-attribute.interface";
 
 export interface IMediaItem {
     id: number;
-    image: string;
+    image: IMediaItemImage;
     title: string;
     chapterTitle: string;
     description: string;
@@ -20,5 +20,6 @@ export interface IMediaItem {
     links: IMediaItemLink[];
     titles: IMediaItemTitle[];
     languages: IMediaItemLanguage[];
+    
     itemsCount: number;
 }

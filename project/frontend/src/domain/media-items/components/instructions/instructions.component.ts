@@ -25,25 +25,16 @@ export class InstructionsComponent
             'assets/instructions/generic-01-a.png',
             'assets/instructions/generic-01-b.png',
             'assets/instructions/generic-02-a.png',
-            'assets/instructions/generic-02-a.png',
-            'assets/instructions/generic-03-a.png',
-            'assets/instructions/generic-01-a.png',
-            'assets/instructions/generic-01-b.png',
-            'assets/instructions/generic-02-a.png',
-            'assets/instructions/generic-02-a.png',
+            'assets/instructions/generic-02-b.png',
             'assets/instructions/generic-03-a.png',
             'assets/instructions/anime-01-a.png',
             'assets/instructions/bluray-01-a.png',
+            'assets/instructions/bluray-01-b.png',
             'assets/instructions/bluray-02-a.png',
-            'assets/instructions/bluray-02-b.png',
             'assets/instructions/bluray-03-a.png',
-            'assets/instructions/bluray-03-b.png',
             'assets/instructions/bluray-04-a.png',
-            'assets/instructions/bluray-04-b.png',
             'assets/instructions/bluray-05-a.png',
-            'assets/instructions/bluray-05-b.png',
             'assets/instructions/bluray-06-a.png',
-            'assets/instructions/bluray-06-b.png',
         ].map(x => { return { src: x }; });
 
         this.instructionsRows = [
@@ -67,12 +58,12 @@ export class InstructionsComponent
             {
                 type: 'bdvm',
                 rows: [
-                    { text: 'instructions-bluray-1', images: [6]  },
-                    { text: 'instructions-bluray-2', images: [7, 8]  },
-                    { text: 'instructions-bluray-3', images: [9, 10]  },
-                    { text: 'instructions-bluray-4', images: [11, 12]  },
-                    { text: 'instructions-bluray-5', images: [13, 14]  },
-                    { text: 'instructions-bluray-6', images: [15, 16]  },
+                    { text: 'instructions-bluray-1', images: [6, 7]  },
+                    { text: 'instructions-bluray-2', images: [8]  },
+                    { text: 'instructions-bluray-3', images: [9]  },
+                    { text: 'instructions-bluray-4', images: [10]  },
+                    { text: 'instructions-bluray-5', images: [11]  },
+                    { text: 'instructions-bluray-6', images: [12]  },
                     { text: 'instructions-generic-3', images: [4]  },
                     { text: 'instructions-anime-1', images: [5]  }
                 ]

@@ -2,9 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Lightbox } from 'ngx-lightbox';
 import { MediaItemsService } from '../../../media-items/services/media-items.service';
+import { IGalleryImage } from '../../../models/media/gallery-image.interface';
 import { IGroupMediaItem } from '../../../models/media/group-media-item.interface';
 import { IMediaItemLink } from '../../../models/media/media-item-link.interface';
 import { IMediaItem } from '../../../models/media/media-item.interface';
+import { ImageSourceResolverService } from '../../../utility/image-source-resolver.serivce';
 
 @Component({
   selector: 'app-library-item-details',
@@ -22,7 +24,8 @@ export class LibraryItemDetailsComponent implements OnInit {
   public hasItems: boolean = false;
   public hasImages: boolean = false;
 
-  public images: { src: string }[] = [];
+  public images: IGalleryImage[] = [];
+  public image!: IGalleryImage;
 
   private isChapter: boolean = false;
 
@@ -30,7 +33,8 @@ export class LibraryItemDetailsComponent implements OnInit {
       private readonly router: Router,
       private readonly route: ActivatedRoute,
       private readonly mediaItemsService: MediaItemsService,
-      private readonly lightbox: Lightbox
+      private readonly lightbox: Lightbox,
+      private readonly imageSourceResolverService: ImageSourceResolverService,
   ) { 
     const state = (this.router.getCurrentNavigation()?.extras?.state as any);
     this.isChapter = state?.isChapter ?? false;
@@ -57,17 +61,27 @@ export class LibraryItemDetailsComponent implements OnInit {
         this.hasItems = this.mediaItem.items != null && this.mediaItem.items.length > 1;
         this.hasImages = this.mediaItem.groupingItem.images != null && this.mediaItem.groupingItem.images.length > 0;
 
+        this.image = {
+            id: this.mediaItem.groupingItem.image.id,
+            filePath: this.mediaItem.groupingItem.image.image,
+            src: this.imageSourceResolverService.resolve(this.mediaItem.groupingItem.image)
+        };
+
+        this.images.push(this.image);
+
         if (this.hasImages) {
-            this.images = this.mediaItem
+            this.images.push(...this.mediaItem
                 .groupingItem
                 .images
                 .map(x => {
                     return {
+                        id: x.id,
+                        filePath: x.image,
                         src: x.image.toLowerCase().startsWith("http")
                             ? x.image
                             : this.mediaItemsService.getImageUrl(x.id)
                     }
-                });
+                }));
         }
     })
     .catch((ex) => {

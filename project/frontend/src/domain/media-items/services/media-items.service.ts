@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
-import { ICachedImage } from "../../models/media/cached-image.interface";
 import { IGroupMediaItem } from "../../models/media/group-media-item.interface";
 import { IMediaItem } from "../../models/media/media-item.interface";
 import { Maybe } from "../../models/utility/maybe.type";

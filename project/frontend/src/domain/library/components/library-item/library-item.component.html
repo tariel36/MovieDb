@@ -1,10 +1,10 @@
 <div class="library-item mat-elevation-z2" (click)="onClick()">
     <div class="library-item-content">
         <div class="flex-column image-container">
-            <img class="image" [src]="mediaItem.image" />
+            <img class="image" [src]="image.src" />
         </div>
         <div class="title">
-            <div class="inner-title">{{title}}<span *ngIf="hasMultipleItems">&nbsp;({{mediaItem.itemsCount}}&nbsp;{{ 'video' | translate }})</span></div>
+            <div class="inner-title">{{title}}<ng-container *ngIf="hasMultipleItems">&nbsp;({{mediaItem.itemsCount}}&nbsp;{{ 'video' | translate }})</ng-container></div>
         </div>
     </div>
 </div>
