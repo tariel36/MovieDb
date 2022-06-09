@@ -67,10 +67,8 @@ export class LibraryItemDetailsComponent implements OnInit {
             src: this.imageSourceResolverService.resolve(this.mediaItem.groupingItem.image)
         };
 
-        this.images.push(this.image);
-
         if (this.hasImages) {
-            this.images.push(...this.mediaItem
+            this.images = this.mediaItem
                 .groupingItem
                 .images
                 .map(x => {
@@ -81,7 +79,7 @@ export class LibraryItemDetailsComponent implements OnInit {
                             ? x.image
                             : this.mediaItemsService.getImageUrl(x.id)
                     }
-                }));
+                });
         }
     })
     .catch((ex) => {
@@ -101,7 +99,7 @@ export class LibraryItemDetailsComponent implements OnInit {
   }
 
   public openImage(index: number): void {
-    this.lightbox.open(this.images as any, index);
+    this.lightbox.open(this.images.concat([this.image]) as any, index);
   }
 
   public onBackClick(): void {
