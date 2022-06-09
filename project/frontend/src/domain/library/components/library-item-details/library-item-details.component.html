@@ -7,12 +7,12 @@
         <button mat-icon-button (click)="onBackClick()"><mat-icon>arrow_back</mat-icon></button>
         <div class="header-big">{{title}}</div>
     </div>
-    <div class="details-container mat-elevation-z2">
-        <div *ngIf="mediaItem.groupingItem.image" class="image-container mat-elevation-z2 h-fit-content">
-            <img [src]="image.src" />
+    <div class="details-container mat-elevation-z2 max-width">
+        <div *ngIf="mediaItem.groupingItem.image" class="image-container mat-elevation-z2 max-width-third">
+            <img [src]="image.src" class="max-width-third" />
         </div>
-        <div class="details-right-column">
-            <div class="attributes-container mat-elevation-z2">
+        <div class="details-right-column max-width-2-3">
+            <div class="attributes-container mat-elevation-z2 max-width-third">
                 <div class="attributes-inner-container">
                     <div *ngIf="mediaItem.groupingItem.attributes" class="attributes-column">
                         <div class="mat-elevation-z2 small-title">
@@ -79,7 +79,7 @@
                     {{mediaItem.groupingItem.description}}
                 </div>
             </div>
-            <div class="actions-container mat-elevation-z2">
+            <div class="actions-container mat-elevation-z2 max-width-third">
                 <div class="mat-elevation-z2 small-title">
                     {{ 'location' | translate }}
                 </div>
