@@ -1,5 +1,8 @@
-﻿namespace MovieDbApi.Common.Domain.Crawling.Models
+﻿using System.Diagnostics;
+
+namespace MovieDbApi.Common.Domain.Crawling.Models
 {
+    [DebuggerDisplay("{FilePath}")]
     public class MediaIntermediateItem
     {
         public string Directory { get; internal set; }

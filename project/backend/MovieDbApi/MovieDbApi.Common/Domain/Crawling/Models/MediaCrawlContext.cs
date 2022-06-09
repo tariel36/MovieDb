@@ -10,6 +10,5 @@
         public string Path { get; set; }
 
         public List<MediaCrawlerItem> Items { get; set; }
-
     }
 }

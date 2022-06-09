@@ -75,7 +75,6 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
             result.Description = _translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Description);
             result.Instructions = GetInstructions(item);
             result.ItemsCount = item.ItemsCount;
-            result.Image = string.IsNullOrWhiteSpace(result.Image) ? "/assets/placeholders/no-cover.png" : result.Image;
 
             if (item.Attributes?.Count > 0)
             {

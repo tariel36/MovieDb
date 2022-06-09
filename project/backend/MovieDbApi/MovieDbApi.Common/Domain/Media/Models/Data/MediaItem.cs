@@ -17,7 +17,7 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
 
         public string? ChapterTitle { get; set; }
 
-        public string? Image { get; set; }
+        public MediaItemImage Image { get; set; }
 
         public string? Path { get; set; }
 

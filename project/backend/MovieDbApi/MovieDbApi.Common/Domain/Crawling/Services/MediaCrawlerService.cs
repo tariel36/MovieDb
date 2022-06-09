@@ -2,7 +2,7 @@
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Files;
 using MovieDbApi.Common.Domain.Utility;
-using Newtonsoft.Json;
+using System.Linq;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
@@ -12,6 +12,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
         public MediaCrawlerService()
         {
+            IgnoredPaths = new HashSet<string>();
+
             CrawlingContextProvider = (ctx) =>
             {
                 InnerCrawl(ctx);
@@ -21,8 +23,12 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
         private Func<MediaCrawlContext, MediaCrawlContext> CrawlingContextProvider { get; }
 
+        private HashSet<string> IgnoredPaths { get; }
+
         public List<MediaIntermediateItem> Crawl(MediaCrawlContext ctx)
         {
+            IgnoredPaths.Clear();
+
             // We have some kind of tree structure here.
             // Now we have to squash that to the topmost level,
             // so the single movies and seasons are the only deeper
@@ -88,7 +94,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         Directory = item.Directory,
                         FilePath = vidPath,
                         MainImage = item.MainImage,
-                        Images = item.Images,
+                        Images = item.Images.Distinct().ToList(),
                         Group = group,
                         Type = item.Type,
                     };
@@ -106,6 +112,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
             return ctx.Items
                 .Select<MediaCrawlerItem, (string path, MediaCrawlerItem item)>(x => (x.Directory.Replace(ctx.Path, string.Empty), x))
                 .GroupBy(x => Path.GetDirectoryName(x.path).Replace("\\", string.Empty).Replace("/", string.Empty))
+                .Where(x => !string.IsNullOrWhiteSpace(x.Key))
                 .Where(x => x.All(y => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(y.item.Directory))))
                 .ToDictionary(k => k.Key, v => (Path.GetDirectoryName(v.First().item.Directory), v.Select(x => x.item).ToList()))
                 ;
@@ -174,23 +181,49 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         }
                         else if (grouping.Any(FileExtensions.IsBdmv))
                         {
-                            string directory = Path.GetDirectoryName(grouping.First());
+                            // There are 2 cases.
+                            // * Directory with single BDMV directory
+                            // * Directory with multiple BDMVS - directories
+                            // The 2nd case is tricky, because it will be traversed
+                            // like normal directory tree, but we need to capture
+                            // it like single directory with multiple files.
+
+                            string video = Path.GetDirectoryName(grouping.First());
+                            string directory = Path.GetDirectoryName(video);
+
+                            List<string> videos = new List<string>();
+
+                            if (Directory.EnumerateDirectories(directory).All(x => Directory.EnumerateDirectories(x).Any(FileExtensions.IsBdmv)))
+                            {
+                                videos.AddRange(Directory.EnumerateDirectories(directory));
+                            }
+                            else
+                            {
+                                videos.Add(video);
+                            }
 
                             string mainImage = grouping.Where(FileExtensions.IsImage).FirstOrDefault();
 
                             List<string> images = Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
-                                .Where(x => FileExtensions.IsImage(x) && !string.Equals(x, mainImage))
-                                .ToList();
+                                    .Where(x => FileExtensions.IsImage(x) && !string.Equals(x, mainImage))
+                                    .ToList();
 
-                            MediaCrawlerItem item = new MediaCrawlerItem()
+                            var item = new MediaCrawlerItem()
                             {
                                 Directory = directory,
-                                MainImage = mainImage,
+                                MainImage = mainImage ?? images.FirstOrDefault(),
                                 Images = images,
                                 Type = MediaType.Bdvm,
+                                Videos = new List<string>() { video }
                             };
 
-                            ctx.Items.Add(item);
+                            if (!IgnoredPaths.Contains(item.Directory) && item.Videos.All(y => !IgnoredPaths.Contains(y)))
+                            {
+                                ctx.Items.Add(item);
+
+                                IgnoredPaths.Add(item.Directory);
+                                item.Videos.ForEach(x => IgnoredPaths.Add(x));
+                            }
                         }
                         else
                         {
