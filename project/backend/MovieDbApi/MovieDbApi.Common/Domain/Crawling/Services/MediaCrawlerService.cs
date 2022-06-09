@@ -3,6 +3,8 @@ using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Files;
 using MovieDbApi.Common.Domain.Utility;
 using System.Linq;
+using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
+using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
@@ -65,7 +67,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         IsGrouping = true,
                         MainImage = images.FirstOrDefault(),
                         Type = MediaType.Franchise,
-                        Videos = group.Value.items.SelectMany(x => x.Videos).Distinct().ToList()
+                        Videos = group.Value.items.SelectMany(x => x.Videos).Distinct().ToList(),
                     });
                 }
             }
@@ -97,6 +99,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         Images = item.Images.Distinct().ToList(),
                         Group = group,
                         Type = item.Type,
+                        Url = item.Url,
                     };
 
                     groupItems.Add(intermediateItem);
@@ -242,6 +245,22 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                     default:
                     {
                         throw new InvalidOperationException($"Unsupported key `{grouping.Key}`.");
+                    }
+                }
+            }
+
+            string readMeFilePath = Directory.EnumerateFiles(ctx.Path).FirstOrDefault(x => string.Equals(Path.GetFileName(x), "READ ME.txt"));
+            if (!string.IsNullOrWhiteSpace(readMeFilePath))
+            {
+                NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(readMeFilePath);
+
+                foreach (MediaCrawlerItem item in ctx.Items)
+                {
+                    string dirName = Path.GetFileName(item.Directory);
+                    
+                    if (readMeFile.Entries.TryGetValue(dirName, out NutaReadMeEntry entry))
+                    {
+                        item.Url = entry.Url;
                     }
                 }
             }

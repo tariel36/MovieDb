@@ -19,6 +19,11 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
 
         private string ApiKey { get; }
 
+        public override ApiMediaItemDetails GetByUrl(string url)
+        {
+            return null;
+        }
+
         public override ApiMediaItemDetails SearchDetailsByTitle(string title)
         {
             string url = $"http://www.omdbapi.com/?apikey={ApiKey}&s={title}";

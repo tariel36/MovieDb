@@ -8,8 +8,10 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
         int Order { get; }
 
         SearchResult SearchByTitle(string title);
-
+        
         ApiMediaItemDetails SearchDetailsByTitle(string title);
+        
+        ApiMediaItemDetails GetByUrl(string url);
 
         bool IsSupported(MediaItemType type);
     }

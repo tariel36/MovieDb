@@ -10,6 +10,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Models
         public string MainImage { get; internal set; }
         public List<string> Images { get; internal set; }
         public string Group { get; internal set; }
+        public string Url { get; internal set; }
         public MediaType Type { get; internal set; }
     }
 }

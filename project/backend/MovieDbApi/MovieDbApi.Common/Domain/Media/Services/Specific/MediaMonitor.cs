@@ -84,14 +84,16 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                         int groupCount = grouping.Count();
 
-                        foreach (IMediaDataProvider? api in Apis.Where(x => type == MediaItemType.Unknown || x.IsSupported(type)))
+                        foreach (IMediaDataProvider api in Apis.Where(x => type == MediaItemType.Unknown || x.IsSupported(type)))
                         {
                             if (itemsToProcess.Count > 1)
                             {
                                 string title = ClearTitle(Path.GetFileName(Path.GetDirectoryName(itemToProcess.FilePath)));
 
                                 // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
-                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title) ?? GetDefault(title, itemToProcess);
+                                ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
+                                    ?? api.SearchDetailsByTitle(title)
+                                    ?? GetDefault(title, itemToProcess);
 
                                 if (searchResult != null)
                                 {
@@ -105,7 +107,9 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                                 string title = ClearTitle(Path.GetFileName(grouping.Key));
 
                                 // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
-                                ApiMediaItemDetails searchResult = api.SearchDetailsByTitle(title) ?? GetDefault(title, grouping.First());
+                                ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
+                                    ?? api.SearchDetailsByTitle(title)
+                                    ?? GetDefault(title, grouping.First());
 
                                 if (searchResult != null)
                                 {

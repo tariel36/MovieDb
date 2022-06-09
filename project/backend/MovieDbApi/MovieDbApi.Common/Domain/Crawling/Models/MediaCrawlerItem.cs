@@ -13,7 +13,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Models
         }
 
         public string Directory { get; set; }
-        public string? MainImage { get; set; }
+        public string MainImage { get; set; }
+        public string Url { get; set; }
         public List<string> Videos { get; set; }
         public List<string> Images { get; set; }
         public List<List<MediaCrawlerItem>> Groups { get; set; }

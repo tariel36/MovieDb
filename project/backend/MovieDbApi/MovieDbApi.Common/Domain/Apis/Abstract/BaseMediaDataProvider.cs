@@ -23,6 +23,8 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
 
         public abstract ApiMediaItemDetails SearchDetailsByTitle(string title);
 
+        public abstract ApiMediaItemDetails GetByUrl(string url);
+
         public bool IsSupported(MediaItemType type)
         {
             return SupportedTypes.Contains(type);
