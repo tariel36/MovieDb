@@ -26,7 +26,18 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
                 return null;
             }
 
-            return null;
+            string[] split = url.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim().Trim('/'))
+                .ToArray();
+
+            string id = split.LastOrDefault();
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return null;
+            }
+
+            return GetById(id);
         }
 
         public override ApiMediaItemDetails SearchDetailsByTitle(string title)
@@ -45,44 +56,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
                 return null;
             }
 
-            url = $"http://www.omdbapi.com/?apikey={ApiKey}&i={searchItem.ImdbID}";
-
-            OpenMediaDetailsItem details = Get<OpenMediaDetailsItem>(url);
-
-            MediaItemType mediaType = MediaItemType.Unknown;
-
-            if ((details.Genre ?? string.Empty).Split(',').Select(x => x.ToLower()).Contains("animation"))
-            {
-                mediaType = MediaItemType.Cartoon;
-            }
-            else if (string.Equals(details.Type, "movie"))
-            {
-                mediaType = MediaItemType.Movie;
-            }
-            else if (string.Equals(details.Type, "series"))
-            {
-                mediaType = MediaItemType.Series;
-            }
-
-            return new ApiMediaItemDetails
-            {
-                Duration = details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty,
-                DurationPerEpisode = details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty,
-                ExternalId = details.ImdbID,
-                Genre = details.Genre,
-                Plot = details.Plot,
-                Poster = details.Poster,
-                Rated = details.Rated,
-                Rating = details.ImdbRating,
-                ReleaseDate = details.Released,
-                Staff = new [] { details.Director, details.Writer }.Concat(details.Actors.Split(',')).Select(x => x.Trim()).Join(", "),
-                Title = details.Title,
-                Type = details.Type,
-                Url = $"https://www.imdb.com/title/{details.ImdbID}/",
-                Year = details.Year,
-                ApiSource = nameof(OpenMovieDbDataProvider),
-                MediaType = mediaType
-            };
+            return GetById(searchItem.ImdbID);
         }
 
         public override SearchResult SearchByTitle(string title)
@@ -104,6 +78,53 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
                 })
                 .ToList()
             };
+        }
+
+        private ApiMediaItemDetails GetById(string id)
+        {
+            string url = $"http://www.omdbapi.com/?apikey={ApiKey}&i={id}";
+
+            OpenMediaDetailsItem details = Get<OpenMediaDetailsItem>(url);
+
+            MediaItemType mediaType = MediaItemType.Unknown;
+
+            if ((details.Genre ?? string.Empty).Split(',').Select(x => x.ToLower()).Contains("animation"))
+            {
+                mediaType = MediaItemType.Cartoon;
+            }
+            else if (string.Equals(details.Type, "movie"))
+            {
+                mediaType = MediaItemType.Movie;
+            }
+            else if (string.Equals(details.Type, "series"))
+            {
+                mediaType = MediaItemType.Series;
+            }
+
+            return new ApiMediaItemDetails
+            {
+                Duration = RemoveNa(details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty),
+                DurationPerEpisode = RemoveNa(details.Runtime.Split(' ').FirstOrDefault() ?? string.Empty),
+                ExternalId = RemoveNa(details.ImdbID),
+                Genre = RemoveNa(details.Genre),
+                Plot = RemoveNa(details.Plot),
+                Poster = RemoveNa(details.Poster),
+                Rated = RemoveNa(details.Rated),
+                Rating = RemoveNa(details.ImdbRating),
+                ReleaseDate = RemoveNa(details.Released),
+                Staff = new[] { details.Director, details.Writer }.Concat(details.Actors.Split(',')).Select(x => RemoveNa(x.Trim())).Where(x => !string.IsNullOrWhiteSpace(x)).Join(", "),
+                Title = RemoveNa(details.Title),
+                Type = RemoveNa(details.Type),
+                Url = $"https://www.imdb.com/title/{details.ImdbID}/",
+                Year = RemoveNa(details.Year),
+                ApiSource = nameof(OpenMovieDbDataProvider),
+                MediaType = mediaType
+            };
+        }
+
+        private string RemoveNa(string str)
+        {
+            return (str ?? string.Empty).Replace("N/A", string.Empty);
         }
     }
 }

@@ -43,31 +43,50 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
                 return default(TValue);
             }
         }
-        
+
         protected string Get(string uri, string header = null)
         {
-            try
+            int tries = 3;
+
+            while (tries > 0)
             {
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
-                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-                if (!string.IsNullOrWhiteSpace(header))
+                try
                 {
-                    request.Headers.Add(header);
+                    HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
+                    request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+                    if (!string.IsNullOrWhiteSpace(header))
+                    {
+                        request.Headers.Add(header);
+                    }
+
+                    using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+                    using (Stream stream = response.GetResponseStream())
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        return reader.ReadToEnd();
+                    }
                 }
-
-                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream))
+                catch (WebException ex)
                 {
-                    return reader.ReadToEnd();
+                    Console.WriteLine(ex);
+                    tries--;
+                    Throttle().Wait();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+
+                    return null;
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return null;
-            }
+
+            return null;
+        }
+
+        protected async Task Throttle(int miliseconds = 1000)
+        {
+            await Task.Delay(miliseconds);
         }
     }
 }
