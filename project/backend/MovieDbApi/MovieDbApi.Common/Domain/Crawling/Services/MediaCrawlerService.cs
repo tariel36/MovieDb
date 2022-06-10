@@ -128,6 +128,10 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 .GroupBy(x => Path.GetDirectoryName(x.path).Replace("\\", string.Empty).Replace("/", string.Empty))
                 .Where(x => !string.IsNullOrWhiteSpace(x.Key))
                 .Where(x => x.All(y => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(y.item.Directory))))
+                .Where(x => x.All(y =>
+                {
+                    return Directory.EnumerateFiles(y.item.Directory).Count(FileExtensions.IsVideo) == 1;
+                }))
                 .ToDictionary(k => k.Key, v => (Path.GetDirectoryName(v.First().item.Directory), v.Select(x => x.item).ToList()))
                 ;
         }

@@ -82,6 +82,11 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
             url = $"https://api.myanimelist.net/v2/anime/{id}?fields='id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,nsfw,created_at,updated_at,media_type,status,genres,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_animestudios,statistics'";
             MalDetailsItem details = Get<MalDetailsItem>(url, $"X-MAL-CLIENT-ID: {ApiKey}");
 
+            if (details == null)
+            {
+                return null;
+            }
+
             return new ApiMediaItemDetails
             {
                 Duration = TimeSpan.FromSeconds(details.NumEpisodes * details.AverageEpisodeDuration).TotalMinutes.ToString(),

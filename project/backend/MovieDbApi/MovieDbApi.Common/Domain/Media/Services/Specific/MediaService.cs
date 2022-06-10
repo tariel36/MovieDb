@@ -103,7 +103,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public MediaItem GetById(int id)
         {
-            return QueryMediaItems().FirstOrDefault(x => x.Id == id);
+            return QueryMediaItemsDetails().FirstOrDefault(x => x.Id == id);
         }
 
         public GroupMediaItem GetGroup(int id)
@@ -115,7 +115,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 return null;
             }
 
-            List<MediaItem> groupItems = QueryMediaItems()
+            List<MediaItem> groupItems = QueryMediaItemsDetails()
                 .Where(x => x.Group == group.Group)
                 .Where(x => !x.IsGrouping)
                 .ToList();
@@ -163,7 +163,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public List<MediaItem> GetSingleElementsByTypes(MediaItemType[] types)
         {
-            IQueryable<MediaItem>? query = QueryMediaItems().Where(x => x.IsGrouping == true || x.GroupId == null);
+            IQueryable<MediaItem>? query = QueryMediaItemsDetails().Where(x => x.IsGrouping == true || x.GroupId == null);
 
             if (types?.Length > 0)
             {
@@ -174,6 +174,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         }
 
         private IQueryable<MediaItem> QueryMediaItems()
+        {
+            return _mediaContext.MediaItems
+                .Include(x => x.Image)
+                .OrderBy(x => x.Title)
+                ;
+        }
+
+        private IQueryable<MediaItem> QueryMediaItemsDetails()
         {
             return _mediaContext.MediaItems
                 .Include(x => x.Attributes)
