@@ -86,8 +86,15 @@
                 <div>
                     <mat-form-field class="w-100" appearance="legacy">
                         <mat-label>{{ 'path' | translate }}</mat-label>
-                        <input matInput readonly [value]="mediaItem.groupingItem.path">
+                        <textarea
+                            matInput
+                            readonly
+                            cdkTextareaAutosize
+                            cdkAutosizeMinRows="4"
+                            [value]="mediaItem.groupingItem.path"
+                        ></textarea>
                     </mat-form-field>
+                    <button mat-raised-button color="primary" class="w-100" [cdkCopyToClipboard]="mediaItem.groupingItem.path">{{ 'copy-path' | translate }}</button>
                 </div>
                 <div *ngIf="mediaItem.groupingItem.instructions" class="mat-elevation-z2 small-title">
                     {{ 'instructions' | translate }}

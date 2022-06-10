@@ -38,5 +38,6 @@
     "email": "e-mail",
     "Cancel": "Cancel",
     "video": "video",
-    "notifications-instructions": "If you want to receive notifications about new movies, series or other media, please provide your e-mail address."
+    "notifications-instructions": "If you want to receive notifications about new movies, series or other media, please provide your e-mail address.",
+    "copy-path": "Copy path"
 }
