@@ -1,4 +1,5 @@
-$titleHeight: 50px;
+$titleHeight: 100px;
+$cardHeight: 385px;
 
 .library-item {
     display: flex;
@@ -6,9 +7,9 @@ $titleHeight: 50px;
     max-width: 225px;
     min-width: 225px;
     width: 225px;
-    max-height: 335px;
-    min-height: 335px;
-    height: 335px;
+    max-height: $cardHeight;
+    min-height: $cardHeight;
+    height: $cardHeight;
     cursor: pointer;
     position: relative;
 }
