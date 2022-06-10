@@ -5,6 +5,7 @@ using MovieDbApi.Common.Domain.Utility;
 using System.Linq;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
+using MovieDbApi.Common.Domain.Media.Services.Abstract;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
@@ -12,8 +13,10 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
     {
         private readonly Regex OrderedDirectoryRegex = new Regex("^[0-9]+\\.", RegexOptions.Compiled);
 
-        public MediaCrawlerService()
+        public MediaCrawlerService(IMediaService mediaContextService)
         {
+            MediaContextService = mediaContextService;
+
             IgnoredPaths = new HashSet<string>();
 
             CrawlingContextProvider = (ctx) =>
@@ -27,9 +30,15 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
         private HashSet<string> IgnoredPaths { get; }
 
+        private IMediaService MediaContextService { get; }
+
+        private Regex IgnoredPathKeywords { get; set; }
+
         public List<MediaIntermediateItem> Crawl(MediaCrawlContext ctx)
         {
             IgnoredPaths.Clear();
+
+            IgnoredPathKeywords = new Regex("(\\\\|\\/)([0-9]+([a-zA-Z]+)?\\.[ ]*)?((" + string.Join("|", MediaContextService.IgnoredPaths.Select(x => x.Path)) + "))(\\\\|\\/)?", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
             // We have some kind of tree structure here.
             // Now we have to squash that to the topmost level,
@@ -131,11 +140,13 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
             if (!Directory.Exists(ctx.Path))
             {
+                Console.WriteLine($"Skipped path because directory `{ctx.Path}` does not exist.");
                 return;
             }
 
-            if (ctx.Path.Contains("Sword Art Online"))
+            if (IgnoredPathKeywords.IsMatch(ctx.Path))
             {
+                Console.WriteLine($"Skipped path because path `{ctx.Path}` contains ignored keyword.");
                 return;
             }
 
