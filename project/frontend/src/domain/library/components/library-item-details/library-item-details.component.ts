@@ -75,9 +75,7 @@ export class LibraryItemDetailsComponent implements OnInit {
                     return {
                         id: x.id,
                         filePath: x.image,
-                        src: x.image.toLowerCase().startsWith("http")
-                            ? x.image
-                            : this.mediaItemsService.getImageUrl(x.id)
+                        src: this.imageSourceResolverService.resolve(x)
                     }
                 });
         }
