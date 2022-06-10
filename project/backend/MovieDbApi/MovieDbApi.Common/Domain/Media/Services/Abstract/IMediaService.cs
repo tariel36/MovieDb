@@ -6,6 +6,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Abstract
     public interface IMediaService
     {
         IQueryable<ScannedPath> ScannedPaths { get; }
+        
+        IQueryable<IgnoredPath> IgnoredPaths { get; }
 
         IQueryable<MediaItem> MediaItems { get; }
 

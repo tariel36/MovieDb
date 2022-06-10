@@ -21,6 +21,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         
         public IQueryable<MediaItem> MediaItems { get { return MediaItemsCollection.AsQueryable(); } }
 
+        public IQueryable<IgnoredPath> IgnoredPaths
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public List<MediaItem> GetAll(MediaItemType[] types)
         {
             throw new NotImplementedException();

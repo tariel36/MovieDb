@@ -56,9 +56,10 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
 
-            MediaCrawlerService crawler = new MediaCrawlerService();
+            MediaCrawlerService crawler = new MediaCrawlerService(_mediaService);
 
-            foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path))
+            // ToList closes db connection so it can be reused later on
+            foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path).ToList())
             {
                 MediaCrawlContext ctx = new MediaCrawlContext() { Path = rootPath };
 

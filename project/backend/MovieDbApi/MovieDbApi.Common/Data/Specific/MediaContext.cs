@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MovieDbApi.Common.Domain.Media.Models.Data;
-using MovieDbApi.Common.Maintenance;
 
 namespace MovieDbApi.Common.Data.Specific
 {
@@ -29,6 +28,7 @@ namespace MovieDbApi.Common.Data.Specific
         public DbSet<MediaItemRelation> MediaItemRelations { get; set; }
         public DbSet<MediaItemTitle> MediaItemTitle { get; set; }
         public DbSet<ScannedPath> ScannedPaths { get; set; }
+        public DbSet<IgnoredPath> IgnoredPaths { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<SubscriberMediaItemType> SubscriberMediaItemTypes { get; set; }
         public DbSet<TranslationCache> TranslationCache { get; set; }

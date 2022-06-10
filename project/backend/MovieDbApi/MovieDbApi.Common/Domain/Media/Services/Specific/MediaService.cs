@@ -21,6 +21,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public IQueryable<ScannedPath> ScannedPaths { get { return _mediaContext.ScannedPaths; } }
 
+        public IQueryable<IgnoredPath> IgnoredPaths { get { return _mediaContext.IgnoredPaths; } }
+
         public IQueryable<MediaItem> MediaItems { get { return _mediaContext.MediaItems; } }
 
         public TranslationCache SaveTranslationCache(TranslationCache item)
