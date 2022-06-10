@@ -21,6 +21,11 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
 
         public override ApiMediaItemDetails GetByUrl(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return null;
+            }
+
             return null;
         }
 

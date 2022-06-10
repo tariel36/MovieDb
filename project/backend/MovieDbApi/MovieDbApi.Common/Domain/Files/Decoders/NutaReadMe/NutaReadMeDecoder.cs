@@ -9,21 +9,30 @@ namespace MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe
 
         public NutaReadMeFile Deserialize(string filePath)
         {
-            string fileContent = File.ReadAllText(filePath);
-
-            MatchCollection matches = FileRegex.Matches(fileContent);
-
-            List<NutaReadMeEntry> entries = matches.Select(x => new NutaReadMeEntry
+            try
             {
-                Header = x.Groups["header"].Value.Trim(),
-                Url = x.Groups["url"].Value.Trim()
-            }).ToList();
+                string fileContent = File.ReadAllText(filePath);
 
-            return new NutaReadMeFile
+                MatchCollection matches = FileRegex.Matches(fileContent);
+
+                List<NutaReadMeEntry> entries = matches.Select(x => new NutaReadMeEntry
+                {
+                    Header = x.Groups["header"].Value.Trim(),
+                    Url = x.Groups["url"].Value.Trim()
+                }).ToList();
+
+                return new NutaReadMeFile
+                {
+                    FilePath = filePath,
+                    Entries = entries.ToDictionary(k => k.Header)
+                };
+            }
+            catch (Exception ex)
             {
-                FilePath = filePath,
-                Entries = entries.ToDictionary(k => k.Header)
-            };
+                Console.WriteLine(filePath);
+                Console.WriteLine(ex);
+                throw;
+            }
         }
     }
 }

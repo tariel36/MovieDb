@@ -37,6 +37,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
             // items.
             ctx = CrawlingContextProvider(ctx);
 
+            Console.WriteLine("Finished crawling");
+
             List<MediaIntermediateItem> result = new List<MediaIntermediateItem>();
 
             Dictionary<string, (string directory, List<MediaIntermediateItem> items)> groups = new Dictionary<string, (string directory, List<MediaIntermediateItem> items)>();
@@ -125,7 +127,14 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
         {
             ctx = ctx ?? throw new ArgumentNullException(nameof(ctx));
 
+            Console.WriteLine($"Crawling {ctx.Path}");
+
             if (!Directory.Exists(ctx.Path))
+            {
+                return;
+            }
+
+            if (ctx.Path.Contains("Sword Art Online"))
             {
                 return;
             }
@@ -268,6 +277,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
         private string ExtendGroup(Dictionary<string, (string directory, List<MediaIntermediateItem> items)> groups, MediaCrawlerItem item, string group)
         {
+            int maxIterations = 10;
+
             while (groups.ContainsKey(group))
             {
                 (string directory, List<MediaIntermediateItem> items) oldGroupItems = groups[group];
@@ -277,6 +288,11 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 groups[newGroupKey] = oldGroupItems;
 
                 group = GetGroupName(item.Directory, group);
+
+                if (maxIterations-- < 0)
+                {
+                    throw new InvalidOperationException($"Failed to extend group item `{item.Directory}`");
+                }
             }
 
             return group;

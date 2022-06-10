@@ -173,6 +173,11 @@ namespace MovieDbApi.Core.Controllers
         {
             MediaItemImage image = _mediaService.GetImage(id);
 
+            if (!System.IO.File.Exists(image.Image))
+            {
+                return null;
+            }
+
             return File(System.IO.File.OpenRead(image.Image), $"image/{System.IO.Path.GetExtension(image.Image).Replace(".", string.Empty)}");
         }
 

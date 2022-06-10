@@ -20,6 +20,11 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
 
         public override ApiMediaItemDetails GetByUrl(string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return null;
+            }
+
             string[] split = url.Split('/');
 
             string id = split.LastOrDefault();
