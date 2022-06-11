@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Apis\Specific\Anilist\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

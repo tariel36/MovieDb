@@ -36,6 +36,8 @@ namespace MovieDbApi.Common.Domain.Apis.Models
 
         public string Year { get; set; }
 
+        public List<string> Links { get; set; }
+
         public MediaItemType MediaType { get; set; }
     }
 }

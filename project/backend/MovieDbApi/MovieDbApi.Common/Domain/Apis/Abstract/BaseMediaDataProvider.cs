@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
+using System.Text;
 using MovieDbApi.Common.Domain.Apis.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
+using MovieDbApi.Common.Domain.Utility;
 using Newtonsoft.Json;
 
 namespace MovieDbApi.Common.Domain.Apis.Abstract
@@ -30,11 +32,11 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
             return SupportedTypes.Contains(type);
         }
 
-        protected TValue Get<TValue>(string uri, string header = null)
+        protected TValue Get<TValue>(string uri, params string[] headers)
         {
             try
             {
-                string json = Get(uri, header);
+                string json = Query(uri, null, "get", headers);
                 return JsonConvert.DeserializeObject<TValue>(json);
             }
             catch (Exception ex)
@@ -44,7 +46,21 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
             }
         }
 
-        protected string Get(string uri, string header = null)
+        protected TValue Post<TValue>(string uri, object body, params string[] headers)
+        {
+            try
+            {
+                string json = Query(uri, body, "post", headers);
+                return JsonConvert.DeserializeObject<TValue>(json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return default(TValue);
+            }
+        }
+
+        protected string Query(string uri, object body, string method, params string[] headers)
         {
             int tries = 3;
 
@@ -53,11 +69,28 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
                 try
                 {
                     HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
+                    request.Method = method;
                     request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-                    if (!string.IsNullOrWhiteSpace(header))
+                    if (headers?.Length > 0)
                     {
-                        request.Headers.Add(header);
+                        headers.ForEach(x =>
+                        {
+                            request.Headers.Add(x);
+                        });
+                    }
+
+                    if (body != null)
+                    {
+                        string serialized = JsonConvert.SerializeObject(body);
+                        byte[] bytes = Encoding.UTF8.GetBytes(serialized);
+
+                        request.ContentLength = bytes.Length;
+
+                        using (Stream requestStream = request.GetRequestStream())
+                        {
+                            requestStream.Write(bytes, 0, bytes.Length);
+                        }
                     }
 
                     using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())

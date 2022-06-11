@@ -25,7 +25,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
                 return null;
             }
 
-            string[] split = url.Split('/');
+            string[] split = url.Split(new [] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 
             string id = split.LastOrDefault();
 
@@ -39,7 +39,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
                 return null;
             }
 
-            return GetMalDetails(url, id);
+            return GetDetails(url, id);
         }
 
         public override ApiMediaItemDetails SearchDetailsByTitle(string title)
@@ -54,7 +54,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
                 return null;
             }
 
-            return GetMalDetails(url, searchItem.Id.ToString());
+            return GetDetails(url, searchItem.Id.ToString());
         }
 
         public override SearchResult SearchByTitle(string title)
@@ -77,7 +77,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
             };
         }
 
-        private ApiMediaItemDetails GetMalDetails(string url, string id)
+        private ApiMediaItemDetails GetDetails(string url, string id)
         {
             url = $"https://api.myanimelist.net/v2/anime/{id}?fields='id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,nsfw,created_at,updated_at,media_type,status,genres,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_animestudios,statistics'";
             MalDetailsItem details = Get<MalDetailsItem>(url, $"X-MAL-CLIENT-ID: {ApiKey}");
