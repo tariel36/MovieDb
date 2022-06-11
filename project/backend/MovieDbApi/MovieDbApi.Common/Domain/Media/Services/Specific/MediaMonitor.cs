@@ -91,7 +91,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                             {
                                 string title = ClearTitle(Path.GetFileName(Path.GetDirectoryName(itemToProcess.FilePath)));
 
-                                // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
                                 ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
                                     ?? api.SearchDetailsByTitle(title)
                                     ?? GetDefault(title, itemToProcess);
@@ -107,7 +106,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                             {
                                 string title = ClearTitle(Path.GetFileName(grouping.Key));
 
-                                // TODO we can scan for readme files and attach the links/ids from that place to reduce queries
                                 ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
                                     ?? api.SearchDetailsByTitle(title)
                                     ?? GetDefault(title, grouping.First());
@@ -195,6 +193,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 Year = searchResult.Year,
                 MediaType = searchResult.MediaType,
                 FileType = item.Type,
+                Links = searchResult.Links,
                 MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
             };
         }
@@ -211,8 +210,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         private MediaItem ToMediaItem(MediaMonitorIntermediateMediaItem item, bool isGroup, int? groupId = null)
         {
+            ICollection<MediaItemLink> links = (string.IsNullOrWhiteSpace(item.Url)
+                ? new List<MediaItemLink>()
+                : new List<MediaItemLink>() { new MediaItemLink(item.Url) })
+                .Concat((item.Links ?? new List<string>()).Select(x => new MediaItemLink(item.Url)))
+                .ToList()
+                ;
+
             ICollection<MediaItemImage> images = item.Images.Select(x => new MediaItemImage(x)).ToList();
-            ICollection<MediaItemLink> links = string.IsNullOrWhiteSpace(item.Url) ? null : new List<MediaItemLink>() { new MediaItemLink(item.Url) };
             ICollection<MediaItemTitle> titles = (item.Titles ?? new List<string>()).Select(x => new MediaItemTitle(x)).ToList();
             ICollection<MediaItemAttribute> attributes = new List<MediaItemAttribute>()
             {
