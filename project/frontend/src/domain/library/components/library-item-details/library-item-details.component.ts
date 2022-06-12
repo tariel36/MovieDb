@@ -6,6 +6,7 @@ import { IGalleryImage } from '../../../models/media/gallery-image.interface';
 import { IGroupMediaItem } from '../../../models/media/group-media-item.interface';
 import { IMediaItemLink } from '../../../models/media/media-item-link.interface';
 import { IMediaItem } from '../../../models/media/media-item.interface';
+import { MediaLanguageType } from '../../../models/media/media-language-type.enum';
 import { ImageSourceResolverService } from '../../../utility/image-source-resolver.serivce';
 
 @Component({
@@ -20,6 +21,8 @@ export class LibraryItemDetailsComponent implements OnInit {
   public title: string = '';
 
   public columns = ['name', 'value']
+  
+  public languageColumns = ['type', 'language']
 
   public hasItems: boolean = false;
   public hasImages: boolean = false;
@@ -77,6 +80,14 @@ export class LibraryItemDetailsComponent implements OnInit {
                         filePath: x.image,
                         src: this.imageSourceResolverService.resolve(x)
                     }
+                });
+        }
+
+        if (this.mediaItem.groupingItem.languages?.length > 0) {
+            this.mediaItem.groupingItem
+                .languages
+                .forEach(x => {
+                    x.typeName = MediaLanguageType[x.type];
                 });
         }
     })
