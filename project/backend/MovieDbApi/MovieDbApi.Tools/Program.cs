@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using MovieDbApi.Common.Data.Specific;
+using MovieDbApi.Common.Domain.Apis.Specific.Anilist;
 using MovieDbApi.Common.Domain.Compression.Abstract;
 using MovieDbApi.Common.Domain.Compression.Specific;
 using MovieDbApi.Common.Domain.Crawling.Models;
@@ -46,5 +47,9 @@ IMediaService mediaService = new MediaService(ctx, hashProvider);
 
 MediaMonitor monitor = new MediaMonitor(configuration, mediaService);
 monitor.Work();
+
+
+//var api = new AniListDataProvider(string.Empty);
+//var res = api.GetByUrl("https://anilist.co/anime/113425/Kaifuku-Jutsushi-no-Yarinaoshi/");
 
 Console.WriteLine("Done");
