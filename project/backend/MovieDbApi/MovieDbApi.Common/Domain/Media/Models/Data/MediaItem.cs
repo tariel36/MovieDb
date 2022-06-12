@@ -35,6 +35,8 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
         public string? Instructions { get; set; }
 
         public string? ExternalId { get; set; }
+        
+        public string DirectoryOrder { get; set; }
 
         public MediaItemType Type { get; set; }
 

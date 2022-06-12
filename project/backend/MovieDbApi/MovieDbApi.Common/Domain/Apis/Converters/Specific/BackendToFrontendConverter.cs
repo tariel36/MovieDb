@@ -75,6 +75,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
             result.Description = _translator.Translate(ctx.FromLanguage, ctx.ToLanguage, item.Description);
             result.Instructions = GetInstructions(item);
             result.ItemsCount = item.ItemsCount;
+            result.DirectoryOrder = item.DirectoryOrder;
 
             if (item.Attributes?.Count > 0)
             {

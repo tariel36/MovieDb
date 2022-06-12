@@ -194,6 +194,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 MediaType = searchResult.MediaType,
                 FileType = item.Type,
                 Links = searchResult.Links,
+                DirectoryOrder = item.DirectoryOrder ?? string.Empty,
                 MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
             };
         }
@@ -255,6 +256,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 Group = item.Group,
                 GroupId = groupId,
                 Type = item.MediaType,
+                DirectoryOrder = item.DirectoryOrder
             };
 
             return mediaItem;

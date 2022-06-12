@@ -118,6 +118,31 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 }
             }
 
+            // Apply directory ordering
+            result
+                .Where(x => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(Path.GetDirectoryName(x.FilePath))))
+                .GroupBy(x => Path.GetFileName(Path.GetDirectoryName(x.FilePath)))
+                .ForEach(x =>
+                {
+                    string dirOrder = $"{x.Key.Split('.').First()}.";
+                    Match match = CommonRegex.OrderedTitleRegex.Match(dirOrder);
+                    
+                    string num = match.Groups["num"].Value;
+                    string sub = match.Groups["sub"].Value.ToLower();
+
+                    if (string.IsNullOrWhiteSpace(sub))
+                    {
+                        sub = "0000";
+                    }
+                    else
+                    {
+                        sub = (((int) sub[0]) - 97).ToString("0000");
+                    }
+
+                    x.ForEach(y => y.DirectoryOrder = $"{num.PadLeft(4, '0')}-{sub}");
+                })
+                ;
+
             return result;
         }
 
@@ -169,6 +194,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
                             List<string> videos = grouping.Where(FileExtensions.IsVideo)
                                 .Where(x => !x.Contains("NCOP"))
+                                .OrderBy(x => x.Length)
+                                .ThenBy(x => x, StringComparer.InvariantCultureIgnoreCase)
                                 .ToList();
 
                             List<string> images = Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)

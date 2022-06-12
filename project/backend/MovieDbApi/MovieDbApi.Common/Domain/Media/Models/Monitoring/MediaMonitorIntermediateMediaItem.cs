@@ -52,6 +52,8 @@ namespace MovieDbApi.Common.Domain.Media.Models.Monitoring
         public string Url { get; set; }
 
         public string Year { get; set; }
+        
+        public string DirectoryOrder { get; set; }
 
         public MediaItemType MediaType { get; set; }
 

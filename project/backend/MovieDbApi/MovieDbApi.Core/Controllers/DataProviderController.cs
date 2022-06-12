@@ -116,7 +116,11 @@ namespace MovieDbApi.Core.Controllers
                 }
             }
 
-            return result.Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang))).ToList();
+            return result
+                .Select(x => _converter.Convert(new BackendToFrontendConverterContex(x, CommonConsts.BaseLanguage, targetLang)))
+                .OrderBy(x => x.Path)
+                .ThenBy(x => x.DirectoryOrder)
+                .ToList();
         }
 
         [HttpGet("{id:int}")]
