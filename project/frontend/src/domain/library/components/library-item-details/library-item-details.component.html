@@ -11,8 +11,8 @@
         <div *ngIf="mediaItem.groupingItem.image" class="image-container mat-elevation-z2 max-width-third">
             <img [src]="image.src" class="max-width-third" />
         </div>
-        <div class="details-right-column max-width-2-3">
-            <div class="attributes-container mat-elevation-z2 max-width-third">
+        <div class="details-right-column">
+            <div class="attributes-container mat-elevation-z2">
                 <div class="attributes-inner-container">
                     <div *ngIf="mediaItem.groupingItem.attributes" class="attributes-column">
                         <div class="mat-elevation-z2 small-title">
@@ -79,7 +79,7 @@
                     {{mediaItem.groupingItem.description}}
                 </div>
             </div>
-            <div class="actions-container mat-elevation-z2 max-width-third">
+            <div class="actions-container mat-elevation-z2">
                 <div class="mat-elevation-z2 small-title">
                     {{ 'location' | translate }}
                 </div>
