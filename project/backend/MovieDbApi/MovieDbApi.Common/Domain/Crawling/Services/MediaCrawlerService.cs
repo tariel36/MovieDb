@@ -2,11 +2,9 @@
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Files;
 using MovieDbApi.Common.Domain.Utility;
-using System.Linq;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
-using System.IO;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
@@ -105,8 +103,33 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 List<MediaIntermediateItem> groupItems = new List<MediaIntermediateItem>();
                 groups.Add(group, (item.Directory, groupItems));
 
+                string localReadMeFilePath = FindReadMeFile(item.Directory);
+                NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(localReadMeFilePath);
+
                 foreach (string vidPath in item.Videos)
                 {
+                    string url = null;
+
+                    if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1 && !string.IsNullOrWhiteSpace(item.Url))
+                    {
+                        url = item.Url;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1)
+                    {
+                        url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(item.Directory));
+                    }
+
+                    if (string.IsNullOrWhiteSpace(url))
+                    {
+                        url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(Path.GetDirectoryName(vidPath)));
+                    }
+
+                    if (string.IsNullOrWhiteSpace(url))
+                    {
+                        url = item.Url;
+                    }
+
                     MediaIntermediateItem intermediateItem = new MediaIntermediateItem
                     {
                         Directory = item.Directory,
@@ -115,7 +138,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         Images = item.Images.Distinct().ToList(),
                         Group = group,
                         Type = item.Type,
-                        Url = item.Url,
+                        Url = url
                     };
 
                     groupItems.Add(intermediateItem);
@@ -219,7 +242,9 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                                 Images = images,
                                 Videos = videos,
                                 Type = videos.Count > 1 ? MediaType.Season : MediaType.Video,
-                                Url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(directory))
+                                Url = videos.Count == 1 && !string.IsNullOrWhiteSpace(localReadMeFilePath) && Path.GetDirectoryName(localReadMeFilePath).Equals(Path.GetDirectoryName(videos.First()))
+                                    ? (readMeFile?.Entries?.Values?.FirstOrDefault()?.Url ?? TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(directory)))
+                                    : TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(directory))
                             };
 
                             ctx.Items.Add(item);
