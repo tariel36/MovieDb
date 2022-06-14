@@ -25,13 +25,7 @@ export class LibraryComponent implements OnInit {
     ) { }
 
     public ngOnInit(): void {
-        this.startLoading();
-        
-        const types = JSON.parse(this.localStorageService.getValue(LocalStorageKeys.selectedMediaItemTypes) ?? '[]') as number[];
-
-        this.mediaItemsService.getAllMediaItems(types)
-            .then(this.onItemsReceived.bind(this))
-            .finally(this.onAfterItemsReceived.bind(this));
+        this.refresh();
     }
 
     public onSearchKeyUp(args: KeyboardEvent): void {
@@ -41,6 +35,11 @@ export class LibraryComponent implements OnInit {
     }
 
     public onSearchClick(): void {
+        if (this.searchText == null || this.searchText == '') {
+            this.refresh();
+            return;
+        }
+
         this.startLoading();
         
         const types = JSON.parse(this.localStorageService.getValue(LocalStorageKeys.selectedMediaItemTypes) ?? '[]') as number[];
@@ -74,5 +73,15 @@ export class LibraryComponent implements OnInit {
         this.isLoading = true;
         this.items = [];
         this.hasItems = false;
+    }
+
+    private refresh() {
+        this.startLoading();
+
+        const types = JSON.parse(this.localStorageService.getValue(LocalStorageKeys.selectedMediaItemTypes) ?? '[]') as number[];
+
+        this.mediaItemsService.getAllMediaItems(types)
+            .then(this.onItemsReceived.bind(this))
+            .finally(this.onAfterItemsReceived.bind(this));
     }
 }
