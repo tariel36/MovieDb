@@ -3,6 +3,23 @@ MySQL database and phpMyAdmin panel.
 
 Be aware that this package is designed for at home use, because root is used as main DB user with unsafe password. If your resolve thsoe issues, you're good to go.
 
+# Installing DB
+
+1. Install tools
+```
+dotnet tool install --global dotnet-ef
+```
+
+2. Add migrations
+```
+dotnet ef migrations add Init
+```
+
+3. Update db / create db
+```
+dotnet ef database update
+```
+
 # Details
 ## MySQL
 * URL: `http://localhost:3306`;
