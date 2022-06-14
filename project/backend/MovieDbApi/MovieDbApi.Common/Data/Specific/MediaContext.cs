@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MovieDbApi.Common.Domain.Media.Models.Data;
+using MovieDbApi.Common.Maintenance;
 
 namespace MovieDbApi.Common.Data.Specific
 {
