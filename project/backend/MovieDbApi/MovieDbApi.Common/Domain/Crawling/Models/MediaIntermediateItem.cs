@@ -13,5 +13,6 @@ namespace MovieDbApi.Common.Domain.Crawling.Models
         public string Url { get; internal set; }
         public MediaType Type { get; internal set; }
         public string DirectoryOrder { get; internal set; }
+        public string GroupCustomCover { get; internal set; }
     }
 }

@@ -69,9 +69,9 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         .Distinct()
                         .ToList();
 
-                    string mainImage = Directory.EnumerateFiles(group.Value.directory)
-                        .FirstOrDefault(FileExtensions.IsImage)
-                        ?? images.FirstOrDefault();
+                    string mainImage = Directory.EnumerateFiles(group.Value.directory).FirstOrDefault(FileExtensions.IsImage);
+                    bool hasCustomCover = !string.IsNullOrWhiteSpace(mainImage);
+                    mainImage ??= images.FirstOrDefault();
 
                     ctx.Items.Add(new MediaCrawlerItem()
                     {
@@ -82,6 +82,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         MainImage = mainImage,
                         Type = MediaType.Franchise,
                         Videos = group.Value.items.SelectMany(x => x.Videos).Distinct().ToList(),
+                        HasCustomCover = hasCustomCover
                     });
                 }
             }
@@ -134,11 +135,12 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                     {
                         Directory = item.Directory,
                         FilePath = vidPath,
-                        MainImage = item.MainImage,
+                        MainImage = item.HasCustomCover ? null : item.MainImage,
                         Images = item.Images.Distinct().ToList(),
                         Group = group,
                         Type = item.Type,
-                        Url = url
+                        Url = url,
+                        GroupCustomCover = item.HasCustomCover ? item.MainImage : null
                     };
 
                     groupItems.Add(intermediateItem);
@@ -364,7 +366,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         || (entry = readMeFile.Entries
                             .Values
                             .FirstOrDefault(x => string.Equals(
-                                CommonRegex.OrderedTitleRegex.Match(x.Header).Groups["title"].Value,
+                                CommonRegex.OrderedTitleRegexWithTitle.Match(x.Header).Groups["title"].Value,
                                 dirName))
                         ) != null)
             {

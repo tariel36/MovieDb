@@ -93,7 +93,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                                 ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
                                     ?? api.SearchDetailsByTitle(title)
-                                    ?? GetDefault(title, itemToProcess);
+                                    ;
 
                                 if (searchResult != null)
                                 {
@@ -108,7 +108,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                                 ApiMediaItemDetails searchResult = api.GetByUrl(itemToProcess.Url)
                                     ?? api.SearchDetailsByTitle(title)
-                                    ?? GetDefault(title, grouping.First());
+                                    ;
 
                                 if (searchResult != null)
                                 {
@@ -164,6 +164,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 Path = item.FilePath
             };
 
+            string selectedPoster = Extensions.GetNonEmpty(searchResult.Poster, item.MainImage, item.Images);
+
             return new MediaMonitorIntermediateMediaItem()
             {
                 ApiSource = searchResult.ApiSource,
@@ -175,6 +177,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 ExternalId = searchResult.ExternalId,
                 Genre = searchResult.Genre,
                 GroupCount = groupCount.ToString(),
+                GroupCustomCover = item.GroupCustomCover,
                 FilePath = item.FilePath,
                 Group = item.Group,
                 Images = (item.Images ?? new List<string>()).Concat(new[] { searchResult.Poster, item.MainImage }).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList(),
@@ -183,7 +186,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 Rated = searchResult.Rated,
                 Rating = searchResult.Rating,
                 ReleaseDate = searchResult.ReleaseDate,
-                SelectedPoster = Extensions.GetNonEmpty(searchResult.Poster, item.MainImage, item.Images),
+                SelectedPoster = selectedPoster,
                 Staff = searchResult.Staff,
                 Title = searchResult.Title,
                 Titles = searchResult.Titles,
@@ -239,10 +242,10 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             MediaItem mediaItem = new MediaItem()
             {
-                Title = useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.Title,
-                ChapterTitle = useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.ChapterTitle,
+                Title = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.Title),
+                ChapterTitle = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.ChapterTitle),
                 Description = item.Plot,
-                Image = new MediaItemImage(item.SelectedPoster),
+                Image = new MediaItemImage((isGroup ? item.GroupCustomCover : item.SelectedPoster) ?? item.SelectedPoster),
                 Path = isGroup ? item.Directory : item.FilePath,
                 IsGrouping = isGroup,
                 DateAdded = DateTime.UtcNow,

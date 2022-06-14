@@ -24,6 +24,7 @@ namespace MovieDbApi.Common.Domain.Media.Models.Monitoring
         public string FilePath { get; set; }
         
         public string Group { get; set; }
+        public string GroupCustomCover { get; set; }
 
         public List<string> Images { get; set; }
 

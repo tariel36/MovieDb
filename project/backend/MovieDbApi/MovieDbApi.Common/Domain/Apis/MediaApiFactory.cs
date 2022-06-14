@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MovieDbApi.Common.Domain.Apis.Abstract;
 using MovieDbApi.Common.Domain.Apis.Specific.Anilist;
+using MovieDbApi.Common.Domain.Apis.Specific.DefaultFallback;
 using MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList;
 using MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb;
 using MovieDbApi.Common.Maintenance;
@@ -24,6 +25,7 @@ namespace MovieDbApi.Common.Domain.Apis
                     _ => null
                 })
                 .Where(x => x != null)
+                .Concat(new IMediaDataProvider[] { new DefaultFallbackDataProvider() })
                 .OrderBy(x => x.Order)
                 .ToList();
         }

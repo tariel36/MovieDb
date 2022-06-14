@@ -20,5 +20,6 @@ namespace MovieDbApi.Common.Domain.Crawling.Models
         public List<List<MediaCrawlerItem>> Groups { get; set; }
         public bool IsGrouping { get; set; }
         public MediaType Type { get; set; }
+        public bool HasCustomCover { get; set; }
     }
 }
