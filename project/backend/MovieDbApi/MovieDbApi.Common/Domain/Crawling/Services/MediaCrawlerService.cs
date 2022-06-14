@@ -109,27 +109,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
                 foreach (string vidPath in item.Videos)
                 {
-                    string url = null;
-
-                    if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1 && !string.IsNullOrWhiteSpace(item.Url))
-                    {
-                        url = item.Url;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1)
-                    {
-                        url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(item.Directory));
-                    }
-
-                    if (string.IsNullOrWhiteSpace(url))
-                    {
-                        url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(Path.GetDirectoryName(vidPath)));
-                    }
-
-                    if (string.IsNullOrWhiteSpace(url))
-                    {
-                        url = item.Url;
-                    }
+                    string url = GetMediaItemUrlFromReadMe(item, readMeFile, vidPath);
+                    string customTitle = GetMediaItemTitleFromReadMe(item, readMeFile, vidPath);
 
                     MediaIntermediateItem intermediateItem = new MediaIntermediateItem
                     {
@@ -140,7 +121,8 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         Group = group,
                         Type = item.Type,
                         Url = url,
-                        GroupCustomCover = item.HasCustomCover ? item.MainImage : null
+                        GroupCustomCover = item.HasCustomCover ? item.MainImage : null,
+                        CustomTitle = customTitle
                     };
 
                     groupItems.Add(intermediateItem);
@@ -174,6 +156,55 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 ;
 
             return result;
+        }
+
+        private string GetMediaItemUrlFromReadMe(MediaCrawlerItem item, NutaReadMeFile readMeFile, string vidPath)
+        {
+            string url = null;
+
+            if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1 && !string.IsNullOrWhiteSpace(item.Url))
+            {
+                url = item.Url;
+            }
+
+            if (string.IsNullOrWhiteSpace(url) && item.Videos.Count == 1)
+            {
+                url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(item.Directory));
+            }
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(Path.GetDirectoryName(vidPath)));
+            }
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                url = item.Url;
+            }
+
+            return url;
+        }
+
+        private string GetMediaItemTitleFromReadMe(MediaCrawlerItem item, NutaReadMeFile readMeFile, string vidPath)
+        {
+            string title = null;
+
+            if (string.IsNullOrWhiteSpace(title) && item.Videos.Count == 1)
+            {
+                title = TryToGetTitleFromMeadMe(readMeFile, Path.GetFileName(item.Directory));
+            }
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                title = TryToGetTitleFromMeadMe(readMeFile, Path.GetFileName(Path.GetDirectoryName(vidPath)));
+            }
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                title = null;
+            }
+
+            return title;
         }
 
         private Dictionary<string, (string directory, List<MediaCrawlerItem> items)> GetPotentialGroups(MediaCrawlContext ctx)
@@ -357,6 +388,16 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
 
         private string TryToGetUrlFromMeadMe(NutaReadMeFile readMeFile, string dirName)
         {
+            return TryToGetPropertyFromMeadMe(readMeFile, dirName, x => x.Url);
+        }
+
+        private string TryToGetTitleFromMeadMe(NutaReadMeFile readMeFile, string dirName)
+        {
+            return TryToGetPropertyFromMeadMe(readMeFile, dirName, x => x.Title);
+        }
+
+        private string TryToGetPropertyFromMeadMe(NutaReadMeFile readMeFile, string dirName, Func<NutaReadMeEntry, string> getter)
+        {
             if (readMeFile == null || string.IsNullOrWhiteSpace(dirName))
             {
                 return null;
@@ -370,7 +411,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                                 dirName))
                         ) != null)
             {
-                return entry.Url;
+                return getter(entry);
             }
 
             return null;

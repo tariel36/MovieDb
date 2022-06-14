@@ -198,6 +198,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 FileType = item.Type,
                 Links = searchResult.Links,
                 DirectoryOrder = item.DirectoryOrder ?? string.Empty,
+                CustomTitle = item.CustomTitle,
                 MediaLanguages = MediaLanguageResolvers.SelectMany(x => x.Resolve(mediaLanguageResolverCtx)).ToList()
             };
         }
@@ -240,10 +241,13 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 new MediaItemAttribute(nameof(MediaMonitorIntermediateMediaItem.FileType), item.FileType.ToString()),
             };
 
+            string title = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : (item.CustomTitle ?? item.Title));
+            string chapterTitle = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : (item.CustomTitle ?? item.ChapterTitle));
+
             MediaItem mediaItem = new MediaItem()
             {
-                Title = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.Title),
-                ChapterTitle = ClearTitle(useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.ChapterTitle),
+                Title = title,
+                ChapterTitle = chapterTitle,
                 Description = item.Plot,
                 Image = new MediaItemImage((isGroup ? item.GroupCustomCover : item.SelectedPoster) ?? item.SelectedPoster),
                 Path = isGroup ? item.Directory : item.FilePath,

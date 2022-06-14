@@ -5,7 +5,7 @@ namespace MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe
 {
     public class NutaReadMeDecoder
     {
-        private static readonly Regex FileRegex = new Regex("((?<header>[0-9]+([a-zA-Z]+)?\\. .*)\r?\n([ ]|\t)+(?<url>https?:\\/\\/.*))+", RegexOptions.Compiled);
+        private static readonly Regex FileRegex = new Regex("((?<header>[0-9]+([a-zA-Z]+)?\\. .*)\r?\n([ ]|\t)+(?<url>https?:\\/\\/.*))+(\r?\n[ ]+OK)?(\r?\n[ ]+TITLE:[ ]+(?<custom_title>.*))?", RegexOptions.Compiled);
 
         public NutaReadMeFile Deserialize(string filePath)
         {
@@ -23,7 +23,8 @@ namespace MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe
                 List<NutaReadMeEntry> entries = matches.Select(x => new NutaReadMeEntry
                 {
                     Header = x.Groups["header"].Value.Trim(),
-                    Url = x.Groups["url"].Value.Trim()
+                    Url = x.Groups["url"].Value.Trim(),
+                    Title = x.Groups["custom_title"].Value.Trim()
                 }).ToList();
 
                 return new NutaReadMeFile
