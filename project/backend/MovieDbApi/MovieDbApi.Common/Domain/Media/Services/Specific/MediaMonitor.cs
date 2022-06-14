@@ -136,7 +136,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 if (isGroup)
                 {
                     MediaMonitorIntermediateMediaItem item = grouping.First();
-                    MediaItem mediaItem = ToMediaItem(item, isGroup);
+                    MediaItem mediaItem = ToMediaItem(item, isGroup, null, true);
 
                     _mediaService.SaveMediaItem(mediaItem);
                     groupId = mediaItem.Id;
@@ -209,7 +209,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 ;
         }
 
-        private MediaItem ToMediaItem(MediaMonitorIntermediateMediaItem item, bool isGroup, int? groupId = null)
+        private MediaItem ToMediaItem(MediaMonitorIntermediateMediaItem item, bool isGroup, int? groupId = null, bool useDirectoryForGroupName = false)
         {
             ICollection<MediaItemLink> links = (string.IsNullOrWhiteSpace(item.Url)
                 ? new List<MediaItemLink>()
@@ -239,8 +239,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             MediaItem mediaItem = new MediaItem()
             {
-                Title = item.Title,
-                ChapterTitle = item.ChapterTitle,
+                Title = useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.Title,
+                ChapterTitle = useDirectoryForGroupName ? Path.GetFileName(item.Directory) : item.ChapterTitle,
                 Description = item.Plot,
                 Image = new MediaItemImage(item.SelectedPoster),
                 Path = isGroup ? item.Directory : item.FilePath,

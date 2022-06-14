@@ -11,6 +11,11 @@ namespace MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe
         {
             try
             {
+                if (!File.Exists(filePath))
+                {
+                    return null;
+                }
+
                 string fileContent = File.ReadAllText(filePath);
 
                 MatchCollection matches = FileRegex.Matches(fileContent);

@@ -6,6 +6,7 @@ using System.Linq;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using System.IO;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
@@ -70,13 +71,17 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                         .Distinct()
                         .ToList();
 
+                    string mainImage = Directory.EnumerateFiles(group.Value.directory)
+                        .FirstOrDefault(FileExtensions.IsImage)
+                        ?? images.FirstOrDefault();
+
                     ctx.Items.Add(new MediaCrawlerItem()
                     {
                         Directory = group.Value.directory,
                         Groups = null,
                         Images = images,
                         IsGrouping = true,
-                        MainImage = images.FirstOrDefault(),
+                        MainImage = mainImage,
                         Type = MediaType.Franchise,
                         Videos = group.Value.items.SelectMany(x => x.Videos).Distinct().ToList(),
                     });
@@ -155,7 +160,9 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 .Where(x => x.All(y => CommonRegex.OrderedTitleRegex.IsMatch(Path.GetFileName(y.item.Directory))))
                 .Where(x => x.All(y =>
                 {
-                    return Directory.EnumerateFiles(y.item.Directory).Count(FileExtensions.IsVideo) == 1;
+                    return Directory.EnumerateFiles(y.item.Directory).Count(FileExtensions.IsVideo) == 1
+                        || (y.item.Videos.Count == 1 && y.item.Type == MediaType.Bdvm)
+                        ;
                 }))
                 .ToDictionary(k => k.Key, v => (Path.GetDirectoryName(v.First().item.Directory), v.Select(x => x.item).ToList()))
                 ;
@@ -202,13 +209,17 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                                 .Where(x => FileExtensions.IsImage(x) && !string.Equals(x, mainImage))
                                 .ToList();
 
+                            string localReadMeFilePath = FindReadMeFile(directory);
+                            NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(localReadMeFilePath);
+
                             MediaCrawlerItem item = new MediaCrawlerItem()
                             {
                                 Directory = directory,
                                 MainImage = mainImage,
                                 Images = images,
                                 Videos = videos,
-                                Type = videos.Count > 1 ? MediaType.Season : MediaType.Video
+                                Type = videos.Count > 1 ? MediaType.Season : MediaType.Video,
+                                Url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(directory))
                             };
 
                             ctx.Items.Add(item);
@@ -300,21 +311,42 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 }
             }
 
-            string readMeFilePath = Directory.EnumerateFiles(ctx.Path).FirstOrDefault(x => string.Equals(Path.GetFileName(x), "READ ME.txt"));
+            string readMeFilePath = FindReadMeFile(ctx.Path);
             if (!string.IsNullOrWhiteSpace(readMeFilePath))
             {
                 NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(readMeFilePath);
 
                 foreach (MediaCrawlerItem item in ctx.Items)
                 {
-                    string dirName = Path.GetFileName(item.Directory);
-                    
-                    if (readMeFile.Entries.TryGetValue(dirName, out NutaReadMeEntry entry))
-                    {
-                        item.Url = entry.Url;
-                    }
+                    item.Url = TryToGetUrlFromMeadMe(readMeFile, Path.GetFileName(item.Directory));
                 }
             }
+        }
+
+        private string FindReadMeFile(string directory)
+        {
+            return Directory.EnumerateFiles(directory).FirstOrDefault(x => string.Equals(Path.GetFileName(x), "READ ME.txt"));
+        }
+
+        private string TryToGetUrlFromMeadMe(NutaReadMeFile readMeFile, string dirName)
+        {
+            if (readMeFile == null || string.IsNullOrWhiteSpace(dirName))
+            {
+                return null;
+            }
+
+            if (readMeFile.Entries.TryGetValue(dirName, out NutaReadMeEntry entry)
+                        || (entry = readMeFile.Entries
+                            .Values
+                            .FirstOrDefault(x => string.Equals(
+                                CommonRegex.OrderedTitleRegex.Match(x.Header).Groups["title"].Value,
+                                dirName))
+                        ) != null)
+            {
+                return entry.Url;
+            }
+
+            return null;
         }
 
         private string ExtendGroup(Dictionary<string, (string directory, List<MediaIntermediateItem> items)> groups, MediaCrawlerItem item, string group)
