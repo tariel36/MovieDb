@@ -3,22 +3,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Maintenance;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Data.Specific
 {
     public class MediaContext
         : DbContext
     {
-        protected readonly IConfiguration Configuration;
+        protected readonly IConfiguration _configuration;
+        protected readonly ILoggerService _logger; 
 
         public MediaContext()
         {
 
         }
 
-        public MediaContext(IConfiguration configuration)
+        public MediaContext(IConfiguration configuration, ILoggerService logger)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public DbSet<MediaItem> MediaItems { get; set; }
@@ -36,9 +39,9 @@ namespace MovieDbApi.Common.Data.Specific
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            string connectionString = Configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString);
+            string connectionString = _configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString);
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-                .LogTo(Console.WriteLine, LogLevel.Information)
+                .LogTo(_logger.Log, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors()
                 ;

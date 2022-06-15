@@ -15,20 +15,24 @@ using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Media.Services.Specific
 {
     public class MediaMonitor
         : IMediaMonitor
     {
+        private readonly ILoggerService _logger;
         private readonly IMediaService _mediaService;
 
-        public MediaMonitor(IConfiguration configuration,
+        public MediaMonitor(ILoggerService logger,
+            IConfiguration configuration,
             IMediaService mediaContextService)
         {
+            _logger = logger;
             _mediaService = mediaContextService;
 
-            Apis = new MediaApiFactory().GetAllApis(configuration);
+            Apis = new MediaApiFactory().GetAllApis(_logger, configuration);
             InstructionsProvider = new FileInstructionsProvider();
             
             MediaLanguageResolvers = new List<IMediaLanguageResolver>()
@@ -56,7 +60,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
             List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
 
-            MediaCrawlerService crawler = new MediaCrawlerService(_mediaService);
+            MediaCrawlerService crawler = new MediaCrawlerService(_logger, _mediaService);
 
             // ToList closes db connection so it can be reused later on
             foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path).ToList())

@@ -10,6 +10,7 @@ using MovieDbApi.Common.Domain.Notifications.Abstract;
 using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Maintenance;
 using Microsoft.EntityFrameworkCore;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Notifications.Specific
 {
@@ -19,16 +20,16 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
         private readonly MediaContext _mediaContext;
         private readonly IBackendToFrontendConverter _converter;
         private readonly IConfiguration _configuration;
-        private readonly ITranslator _translator;
+        private readonly ILoggerService _logger;
 
         public EmailNotificationService(
             MediaContext mediaContext,
-            ITranslator translator,
+            ILoggerService logger,
             IConfiguration configuration,
             IBackendToFrontendConverter converter)
         {
             _configuration = configuration;
-            _translator = translator;
+            _logger = logger;
             _mediaContext = mediaContext;
             _converter = converter;
         }
@@ -108,7 +109,7 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.Log(ex);
             }
         }
     }

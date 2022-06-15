@@ -4,6 +4,7 @@ using System.Text;
 using MovieDbApi.Common.Domain.Apis.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 using Newtonsoft.Json;
 
 namespace MovieDbApi.Common.Domain.Apis.Abstract
@@ -11,8 +12,13 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
     public abstract class BaseMediaDataProvider
         : IMediaDataProvider
     {
-        protected BaseMediaDataProvider(int order, IEnumerable<MediaItemType> supportedTypes = null)
+        protected readonly ILoggerService _logger;
+
+        protected BaseMediaDataProvider(ILoggerService logger,
+            int order,
+            IEnumerable<MediaItemType> supportedTypes = null)
         {
+            _logger = logger;
             Order = order;
             SupportedTypes = new ReadOnlyCollection<MediaItemType>(supportedTypes?.ToList() ?? new List<MediaItemType>());
         }
@@ -41,7 +47,7 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.Log(ex);
                 return default(TValue);
             }
         }
@@ -55,7 +61,7 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.Log(ex);
                 return default(TValue);
             }
         }
@@ -102,13 +108,13 @@ namespace MovieDbApi.Common.Domain.Apis.Abstract
                 }
                 catch (WebException ex)
                 {
-                    Console.WriteLine(ex);
+                    _logger.Log(ex);
                     tries--;
                     Throttle().Wait();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    _logger.Log(ex);
 
                     return null;
                 }

@@ -5,14 +5,16 @@ using MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb.Models;
 using MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
+using Microsoft.Extensions.Logging;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Specific.OpenMovieDb
 {
     public class OpenMovieDbDataProvider
         : BaseMediaDataProvider
     {
-        public OpenMovieDbDataProvider(string apiKey)
-            : base(99, new[] { MediaItemType.Cartoon, MediaItemType.Movie, MediaItemType.Series })
+        public OpenMovieDbDataProvider(ILoggerService logger, string apiKey)
+            : base(logger, 99, new[] { MediaItemType.Cartoon, MediaItemType.Movie, MediaItemType.Series })
         {
             ApiKey = apiKey;
         }

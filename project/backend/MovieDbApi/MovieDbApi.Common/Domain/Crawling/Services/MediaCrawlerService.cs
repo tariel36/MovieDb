@@ -5,15 +5,20 @@ using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
 {
     public class MediaCrawlerService
     {
         private readonly Regex OrderedDirectoryRegex = new Regex("^[0-9]+\\.", RegexOptions.Compiled);
+        private readonly ILoggerService _logger;
 
-        public MediaCrawlerService(IMediaService mediaContextService)
+        public MediaCrawlerService(ILoggerService logger,
+            IMediaService mediaContextService)
         {
+            _logger = logger;
+
             MediaContextService = mediaContextService;
 
             IgnoredPaths = new HashSet<string>();
@@ -45,7 +50,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
             // items.
             ctx = CrawlingContextProvider(ctx);
 
-            Console.WriteLine("Finished crawling");
+            _logger.Log("Finished crawling");
 
             List<MediaIntermediateItem> result = new List<MediaIntermediateItem>();
 
@@ -105,7 +110,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                 groups.Add(group, (item.Directory, groupItems));
 
                 string localReadMeFilePath = FindReadMeFile(item.Directory);
-                NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(localReadMeFilePath);
+                NutaReadMeFile readMeFile = new NutaReadMeDecoder(_logger).Deserialize(localReadMeFilePath);
 
                 foreach (string vidPath in item.Videos)
                 {
@@ -228,17 +233,17 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
         {
             ctx = ctx ?? throw new ArgumentNullException(nameof(ctx));
 
-            Console.WriteLine($"Crawling {ctx.Path}");
+            _logger.Log($"Crawling {ctx.Path}");
 
             if (!Directory.Exists(ctx.Path))
             {
-                Console.WriteLine($"Skipped path because directory `{ctx.Path}` does not exist.");
+                _logger.Log($"Skipped path because directory `{ctx.Path}` does not exist.");
                 return;
             }
 
             if (IgnoredPathKeywords.IsMatch(ctx.Path))
             {
-                Console.WriteLine($"Skipped path because path `{ctx.Path}` contains ignored keyword.");
+                _logger.Log($"Skipped path because path `{ctx.Path}` contains ignored keyword.");
                 return;
             }
 
@@ -266,7 +271,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
                                 .ToList();
 
                             string localReadMeFilePath = FindReadMeFile(directory);
-                            NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(localReadMeFilePath);
+                            NutaReadMeFile readMeFile = new NutaReadMeDecoder(_logger).Deserialize(localReadMeFilePath);
 
                             MediaCrawlerItem item = new MediaCrawlerItem()
                             {
@@ -372,7 +377,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
             string readMeFilePath = FindReadMeFile(ctx.Path);
             if (!string.IsNullOrWhiteSpace(readMeFilePath))
             {
-                NutaReadMeFile readMeFile = new NutaReadMeDecoder().Deserialize(readMeFilePath);
+                NutaReadMeFile readMeFile = new NutaReadMeDecoder(_logger).Deserialize(readMeFilePath);
 
                 foreach (MediaCrawlerItem item in ctx.Items)
                 {

@@ -1,13 +1,14 @@
 ﻿using MovieDbApi.Common.Domain.Apis.Abstract;
 using MovieDbApi.Common.Domain.Apis.Models;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Specific.DefaultFallback
 {
     public class DefaultFallbackDataProvider
         : BaseMediaDataProvider
     {
-        public DefaultFallbackDataProvider()
-            : base(999999)
+        public DefaultFallbackDataProvider(ILoggerService logger)
+            : base(logger, 999999)
         {
 
         }

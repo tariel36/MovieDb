@@ -3,14 +3,16 @@ using MovieDbApi.Common.Domain.Apis.Models;
 using MovieDbApi.Common.Domain.Apis.Specific.Anilist.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Specific.Anilist
 {
     public class AniListDataProvider
         : BaseMediaDataProvider
     {
-        public AniListDataProvider(string apiKey)
-            : base(2, new[] { MediaItemType.Anime })
+        public AniListDataProvider(ILoggerService logger,
+            string apiKey)
+            : base(logger, 2, new[] { MediaItemType.Anime })
         {
             ApiKey = apiKey;
         }

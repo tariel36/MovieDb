@@ -10,6 +10,8 @@ using MovieDbApi.Common.Domain.Media.Services.Specific;
 using MovieDbApi.Common.Domain.Notifications.Abstract;
 using MovieDbApi.Common.Domain.Notifications.Specific;
 using MovieDbApi.Common.Domain.Tasks;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
+using MovieDbApi.Common.Maintenance.Logging.Specific;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,9 +27,12 @@ builder.Services.AddScoped<IBackendToFrontendConverter, BackendToFrontendConvert
 builder.Services.AddScoped<ITranslator, GoogleTranslate>();
 builder.Services.AddScoped<INotificationService, EmailNotificationService>();
 
+builder.Services.AddTransient<ILoggerSink, ConsoleLoggerSink>();
+
 builder.Services.AddSingleton<ServicesContainer, ServicesContainer>();
 builder.Services.AddSingleton<IHashProvider, Md5HashProvider>();
 builder.Services.AddSingleton<ITranslationItemCache, TranslationItemCache>();
+builder.Services.AddSingleton<ILoggerService, LoggerService>();
 
 WebApplication app = builder.Build();
 

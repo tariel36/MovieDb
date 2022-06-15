@@ -1,12 +1,20 @@
 ﻿using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Tasks
 {
     public class ServiceTask
         : IDisposable
     {
-        public ServiceTask(DateTime startTime, TimeSpan delay, Action<CancellationToken> taskProcedure)
+        private readonly ILoggerService _logger;
+
+        public ServiceTask(ILoggerService logger,
+            DateTime startTime,
+            TimeSpan delay,
+            Action<CancellationToken> taskProcedure)
         {
+            _logger = logger;
+
             StartTime = startTime;
             Delay = delay;
             TaskProcedure = taskProcedure;
@@ -53,7 +61,7 @@ namespace MovieDbApi.Common.Domain.Tasks
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    _logger.Log(ex);
                 }
 
                 await Task.Delay(Delay, CancellationToken);

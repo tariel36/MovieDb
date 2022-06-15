@@ -3,6 +3,7 @@ using MovieDbApi.Common.Data.Caches.Abstract;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
 using MovieDbApi.Common.Domain.Notifications.Abstract;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Tasks
 {
@@ -11,12 +12,16 @@ namespace MovieDbApi.Common.Domain.Tasks
     {
         private readonly IMediaMonitor _mediaMonitor;
         private readonly INotificationService _notificationService;
+        private readonly ILoggerService _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IServiceScope _scope;
         private readonly ITranslationItemCache _traslationCache;
 
-        public ServicesContainer(IServiceScopeFactory serviceScopeFactory)
+        public ServicesContainer(ILoggerService logger,
+            IServiceScopeFactory serviceScopeFactory)
         {
+            _logger = logger;
+
             _serviceScopeFactory = serviceScopeFactory;
             _scope = _serviceScopeFactory.CreateScope();
 
@@ -31,9 +36,9 @@ namespace MovieDbApi.Common.Domain.Tasks
 
         public void Start()
         {
-            Tasks.Add(new ServiceTask(DateTime.UtcNow.Date.AddHours(1), TimeSpan.FromHours(24), (ct) => _mediaMonitor.Work()));
-            Tasks.Add(new ServiceTask(DateTime.UtcNow.Date.AddHours(2), TimeSpan.FromHours(24), (ct) => _notificationService.Work()));
-            Tasks.Add(new ServiceTask(DateTime.UtcNow.Date.AddHours(3), TimeSpan.FromHours(24), (ct) => _traslationCache.Update()));
+            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(1), TimeSpan.FromHours(24), (ct) => _mediaMonitor.Work()));
+            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(2), TimeSpan.FromHours(24), (ct) => _notificationService.Work()));
+            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(3), TimeSpan.FromHours(24), (ct) => _traslationCache.Update()));
         }
 
         public void Stop()

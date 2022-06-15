@@ -4,14 +4,15 @@ using MovieDbApi.Common.Domain.Apis.Models;
 using MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Specific.MyAnimeList
 {
     public class MyAnimeListDataProvider
         : BaseMediaDataProvider
     {
-        public MyAnimeListDataProvider(string apiKey)
-            : base(1, new [] { MediaItemType.Anime })
+        public MyAnimeListDataProvider(ILoggerService logger, string apiKey)
+            : base(logger, 1, new [] { MediaItemType.Anime })
         {
             ApiKey = apiKey;
         }
