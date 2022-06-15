@@ -42,5 +42,9 @@
     "copy-path": "Kopiuj ścieżkę",
     "Japanese": "Japoński",
     "English": "Angielski",
-    "Polish": "Polski"
+    "Polish": "Polski",
+    "type": "Typ",
+    "language": "Język",
+    "Voice": "Dźwięk",
+    "Subtitles": "Napisy"
 }

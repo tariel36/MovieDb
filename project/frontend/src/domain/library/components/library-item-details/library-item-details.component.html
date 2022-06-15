@@ -94,7 +94,7 @@
                             [value]="mediaItem.groupingItem.path"
                         ></textarea>
                     </mat-form-field>
-                    <button mat-raised-button color="primary" class="w-100" [cdkCopyToClipboard]="mediaItem.groupingItem.path">{{ 'copy-path' | translate }}</button>
+                    <button mat-raised-button color="primary" class="w-100 margin-bottom-10" [cdkCopyToClipboard]="mediaItem.groupingItem.path">{{ 'copy-path' | translate }}</button>
                 </div>
                 <div *ngIf="mediaItem.groupingItem.instructions" class="mat-elevation-z2 small-title">
                     {{ 'instructions' | translate }}
