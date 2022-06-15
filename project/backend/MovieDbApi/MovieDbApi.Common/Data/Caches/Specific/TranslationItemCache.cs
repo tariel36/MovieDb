@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MovieDbApi.Common.Data.Caches.Abstract;
 using MovieDbApi.Common.Data.Specific;
-using MovieDbApi.Common.Domain.Utility;
-using Microsoft.Extensions.DependencyInjection;
-using MovieDbApi.Common.Data.Caches.Abstract;
-using MovieDbApi.Common.Domain.Media.Services.Abstract;
-using MovieDbApi.Common.Domain.Notifications.Abstract;
 using MovieDbApi.Common.Domain.Utility;
 
 namespace MovieDbApi.Common.Data.Caches.Specific
@@ -41,7 +31,7 @@ namespace MovieDbApi.Common.Data.Caches.Specific
             return _translations.TryGetValue(language, out Dictionary<string, string> dict)
                 && dict.TryGetValue(key, out string value)
                 ? dict[key]
-                : key;
+                : String.Empty;
         }
 
         public void Set(string to, string value, string translation)
