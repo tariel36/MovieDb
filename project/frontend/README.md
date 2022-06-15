@@ -1,5 +1,0 @@
-# Moviedb
-
-# Libs
-
-https://github.com/lipis/flag-icons
