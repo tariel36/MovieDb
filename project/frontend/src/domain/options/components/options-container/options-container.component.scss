@@ -1,8 +1,57 @@
-.options-container {
+$margin: 5px;
+
+.language-image-large {
+    width: 100px;
+}
+
+.language-image {
+    cursor: pointer;
+}
+
+.not-selected-language {
+    border: 3px solid black;
+}
+
+.selected-language {
+    border: 3px solid yellow;
+}
+
+.languages-container {
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-top: $margin;
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 .internal-container {
     max-width: 270px;
     gap: 10px;
+}
+
+.options-container {
+    display: flex;
+}
+
+.media-items-container {
+    gap: 10px;
+}
+
+.email-container {
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+    align-items: flex-end;
+}
+
+.apply-button {
+    width: 100%;
+}
+
+.loading-container {
+    width: 256px;
+    height: 256px;
 }

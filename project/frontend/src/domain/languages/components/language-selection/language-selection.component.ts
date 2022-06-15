@@ -1,9 +1,6 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { LocalStorageKeys } from '../../../utility/local-storage-keys.enum';
-import { LocalStorageService } from '../../../utility/local-storage.service';
+import { Component, Input, OnInit } from '@angular/core';
 import { ILanguage } from '../../models/language.interface';
+import { LanguageSelectionService } from '../../services/language-selection.service';
 
 @Component({
   selector: 'app-language-selection',
@@ -17,21 +14,15 @@ export class LanguageSelectionComponent implements OnInit {
     public languages: ILanguage[] = [];
 
     constructor(
-        private readonly localStorageService: LocalStorageService,
-        private readonly translateService: TranslateService,
+        private readonly languageSelectionService: LanguageSelectionService,
     ) { }
 
     public ngOnInit(): void {
-        this.languages = [
-            { image: 'assets/flags/gb.svg', name: 'English', slug: 'en' },
-            { image: 'assets/flags/pl.svg', name: 'Polski', slug: 'pl' },
-        ];
+        this.languages = this.languageSelectionService.languages;
     }
 
     public onFlagClick(lang: ILanguage): void {
-        this.localStorageService.setValue(LocalStorageKeys.language, lang.slug);
-        this.localStorageService.setValue(LocalStorageKeys.isLanguageSelected, "1")
-        this.translateService.use(lang.slug)
+        this.languageSelectionService.setLanguage(lang);
         window.location.reload();
     }
 }

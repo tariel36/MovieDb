@@ -5,10 +5,8 @@ import { LightboxConfig } from 'ngx-lightbox';
 import { LocalStorageKeys } from '../domain/utility/local-storage-keys.enum';
 import { LocalStorageService } from '../domain/utility/local-storage.service';
 import { MatDialog } from '@angular/material/dialog';
-import { LanguageSelectionDialogComponent } from '../domain/languages/components/language-selection-dialog/language-selection-dialog.component';
-import { VisibleMediaItemTypesDialogComponent } from '../domain/options/components/visible-media-item-types-dialog/visible-media-item-types-dialog.component';
 import { MediaItemsService } from '../domain/media-items/services/media-items.service';
-import { NotificationEmailDialogComponent } from '../domain/options/components/notification-email-dialog/notification-email-dialog.component';
+import { OptionsContainerDialogComponent } from '../domain/options/components/options-container-dialog/options-container-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -37,9 +35,14 @@ export class AppComponent implements OnInit {
     }
     
     public ngOnInit(): void {
-        this.openSettingsDialog(LocalStorageKeys.isNotificationSelected, NotificationEmailDialogComponent);
-        this.openSettingsDialog(LocalStorageKeys.isMediaItemTypesSelected, VisibleMediaItemTypesDialogComponent);
-        this.openSettingsDialog(LocalStorageKeys.isLanguageSelected, LanguageSelectionDialogComponent);
+        this.openSettingsDialog(
+            OptionsContainerDialogComponent,
+            [
+                LocalStorageKeys.isNotificationSelected,
+                LocalStorageKeys.isMediaItemTypesSelected,
+                LocalStorageKeys.isLanguageSelected
+            ]
+        );
     }
 
     public onTitleClick(): void {
@@ -60,8 +63,8 @@ export class AppComponent implements OnInit {
             });
     }
 
-    private openSettingsDialog(key: string, component: any): void {
-        if (Number.parseInt(this.localStorageService.getValue(key) ?? '0') == 0) {
+    private openSettingsDialog(component: any, keys: string[]): void {
+        if (keys.some(x => Number.parseInt(this.localStorageService.getValue(x) ?? '0') == 0)) {
             this.dialog.open(component);
         }
     }

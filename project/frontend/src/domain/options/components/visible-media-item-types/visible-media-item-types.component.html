@@ -1,9 +1,0 @@
-<div class="flex-column main-container">
-    <div class="">
-        {{ 'select-media-item-types-to-see-by-default' | translate }}
-    </div>
-    <section class="flex-column">
-        <mat-checkbox *ngFor="let item of items" [checked]="item.checked" (change)="onItemChanged($event, item)" class="">{{item.label}}</mat-checkbox>
-    </section>
-    <button mat-raised-button (click)="onApplyClicked()">{{ 'apply' | translate }}</button>
-</div>

@@ -1,8 +1,45 @@
-<div class="flex-column options-container">
+<div *ngIf="isLoading" class="loading-container">
+    <div *ngIf="isLoading" class="loading">
+        <mat-progress-spinner color="primary" mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
+</div>
+
+<div *ngIf="!isLoading" class="flex-column options-container">
     <div class="flex-column internal-container">
-        <div>{{ 'select-language-instructions' | translate }}</div>
-        <app-language-selection [isLarge]="true"></app-language-selection>
-        <app-visible-media-item-types></app-visible-media-item-types>
-        <app-notification-email [isCancelVisible]="false"></app-notification-email>
+        <div>
+            <div>{{ 'select-language-instructions' | translate }}</div>
+            <div class="languages-container">
+                <img *ngFor="let lang of languages;"
+                    [src]="lang.image"
+                    [alt]="lang.name"
+                    class="language-image language-image-large"
+                    [class.selected-language]="isSelectedLanguage(lang)"
+                    [class.not-selected-language]="!isSelectedLanguage(lang)"
+                    (click)="onFlagClick(lang)" />
+            </div>
+        </div>
+        <hr class="w-100" />
+        <div>
+            <div class="flex-column media-items-container">
+                <div class="">
+                    {{ 'select-media-item-types-to-see-by-default' | translate }}
+                </div>
+                <section class="flex-column">
+                    <mat-checkbox *ngFor="let item of items" [checked]="item.checked" (change)="onItemChanged($event, item)" class="">{{item.label}}</mat-checkbox>
+                </section>
+            </div>
+        </div>
+        <hr class="w-100" />
+        <div>
+            <div class="flex-column email-container">
+                <p>{{ 'notifications-instructions' | translate }}</p>
+                <mat-form-field class="w-100" appearance="legacy">
+                    <mat-label>{{ 'email' | translate }}</mat-label>
+                    <input matInput [value]="email" (input)="onEmailInput($event)">
+                </mat-form-field>
+            </div>
+        </div>
+        <button mat-raised-button color="primary" class="apply-button" (click)="onApplyClicked()">{{ 'apply' | translate }}</button>
     </div>
 </div>
