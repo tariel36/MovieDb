@@ -36,9 +36,21 @@ namespace MovieDbApi.Common.Domain.Tasks
 
         public void Start()
         {
-            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(1), TimeSpan.FromHours(24), (ct) => _mediaMonitor.Work()));
-            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(2), TimeSpan.FromHours(24), (ct) => _notificationService.Work()));
-            Tasks.Add(new ServiceTask(_logger, DateTime.UtcNow.Date.AddHours(3), TimeSpan.FromHours(24), (ct) => _traslationCache.Update()));
+            Tasks.Add(new ServiceTask(_logger,
+                DateTime.UtcNow.Date.AddHours(1),
+                TimeSpan.FromHours(24),
+                (ct) => _mediaMonitor.Work()));
+            
+            Tasks.Add(new ServiceTask(_logger,
+                DateTime.UtcNow.Date.AddHours(2),
+                TimeSpan.FromHours(24),
+                (ct) => _notificationService.Work()));
+            
+            Tasks.Add(new ServiceTask(_logger,
+                DateTime.UtcNow.Date.AddHours(3),
+                TimeSpan.FromHours(24),
+                (ct) => _traslationCache.Update(),
+                (ct) => _traslationCache.Initialize()));
         }
 
         public void Stop()

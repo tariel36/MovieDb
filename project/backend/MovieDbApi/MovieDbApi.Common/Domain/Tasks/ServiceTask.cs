@@ -11,13 +11,15 @@ namespace MovieDbApi.Common.Domain.Tasks
         public ServiceTask(ILoggerService logger,
             DateTime startTime,
             TimeSpan delay,
-            Action<CancellationToken> taskProcedure)
+            Action<CancellationToken> taskProcedure,
+            Action<CancellationToken> initializeProcedure = null)
         {
             _logger = logger;
 
             StartTime = startTime;
             Delay = delay;
             TaskProcedure = taskProcedure;
+            InitializeProcedure = initializeProcedure;
 
             CancellationTokenSource = new CancellationTokenSource();
             CancellationToken = CancellationTokenSource.Token;
@@ -37,6 +39,8 @@ namespace MovieDbApi.Common.Domain.Tasks
 
         private Action<CancellationToken> TaskProcedure { get; }
 
+        private Action<CancellationToken> InitializeProcedure { get; }
+
         public void Dispose()
         {
             Extensions.SafeDispose(CancellationTokenSource);
@@ -49,6 +53,11 @@ namespace MovieDbApi.Common.Domain.Tasks
 
         private async Task ServiceProcedure()
         {
+            if (InitializeProcedure != null)
+            {
+                InitializeProcedure(CancellationToken);
+            }
+
             TimeSpan firstRunDelay = StartTime.AddDays(1) - DateTime.UtcNow;
 
             await Task.Delay(firstRunDelay, CancellationToken);

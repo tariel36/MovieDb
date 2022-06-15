@@ -3,6 +3,8 @@
     public interface ITranslationItemCache
         : IDisposable
     {
+        void Initialize();
+
         void Update();
 
         string GetTranslation(string language, string key);

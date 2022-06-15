@@ -31,13 +31,18 @@ namespace MovieDbApi.Common.Data.Caches.Specific
             return _translations.TryGetValue(language, out Dictionary<string, string> dict)
                 && dict.TryGetValue(key, out string value)
                 ? dict[key]
-                : String.Empty;
+                : string.Empty;
         }
 
         public void Set(string to, string value, string translation)
         {
             KeyValuePair<string, Dictionary<string, string>> newKv = _translations.EnsureKey(to, () => new Dictionary<string, string>());
             newKv.Value[value] = translation;
+        }
+
+        public void Initialize()
+        {
+            Update();
         }
 
         public void Update()
