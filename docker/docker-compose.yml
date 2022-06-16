@@ -26,8 +26,8 @@ services:
   moviedb-backend:
     container_name: moviedb-backend
     image: moviedb/backend:latest
-#    volumes:
-#      - moviedb-files-root:/data
+    volumes:
+      - moviedb-files-root:/app/ext_root
     ports:
       - 5137:80
     networks:
@@ -42,6 +42,12 @@ services:
       - moviedb-net
 
 volumes:
+  moviedb-files-root:
+    driver_opts: 
+      type: cifs
+      o: "username=${SHARED_ROOT_DIR_USER},password=${SHARED_ROOT_DIR_PASS}"
+      device: "${SHARED_ROOT_DIR_ROOT}"
+
   moviedb-mysql-data:
 
 networks:
