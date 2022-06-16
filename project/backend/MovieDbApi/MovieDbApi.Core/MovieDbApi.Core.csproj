@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>9353b93f-3264-436a-b3bf-0a1714771261</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileTag>moviedb/backend</DockerfileTag>
   </PropertyGroup>
 
   <ItemGroup>

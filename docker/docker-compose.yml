@@ -23,6 +23,24 @@ services:
     environment:
       - PMA_ARBITRARY=1
 
+  moviedb-backend:
+    container_name: moviedb-backend
+    image: moviedb/backend:latest
+#    volumes:
+#      - moviedb-files-root:/data
+    ports:
+      - 5137:80
+    networks:
+      - moviedb-net
+
+  moviedb-frontend:
+    container_name: moviedb-frontend
+    image: moviedb/frontend:latest
+    ports:
+      - 8082:80
+    networks:
+      - moviedb-net
+
 volumes:
   moviedb-mysql-data:
 
