@@ -1,6 +1,6 @@
 # MovieDB
 
-Selfhosted movie database prepared for docker run.
+Selfhosted movie database prepared for hosting in docker.
 
 ## Docker
 
@@ -12,40 +12,97 @@ Docker compose file contains of 4 services:
 
 Be aware that this package is designed for at home use, because root is used as main DB user with unsafe password. If your resolve thsoe issues, you're good to go.
 
+## Building & Deploying
+
+How to build and deploy the application.
+
+### Backend
+
+1. Copy `appsettings.template.json` and rename it to `appsettings.json`;
+2. Fill in missing configuration values, modify those you want:
+
+    * Modify connection string if needed;
+    * `ApiKeys:OpenMovieDb` - provide your OpenMovieDb api key;
+    * `ApiKeys:MyAnimeList` - provide your MyAnimeList api key;
+    * For day od 2022-06-16, the `ApiKeys:Anilist` is not needed;
+    * `Email:Host` - provide your email SMTP host;
+    * `Email:From` - provide your email addres;
+    * `Email:User` - provide your email address;
+    * `Email:Password` - provide your email password;
+    * `ConnectionString` - Key to selected connection string, for example `ConnectionStrings:DockerConnectionString`;
+    * `IsDeveloper` - `false`
+
+3. Compile your app;
+4. Run migrations if needed:
+
+    1. Install tools - `dotnet tool install --global dotnet-ef`'
+    2. Update db / create db - `dotnet ef database update`;
+
+5. Build docker image, if needed coerce paths to dockerfile and solution file, you can do it through VS (preferable) or by command line:
+
 ```
-TODO: Installation guide
+docker build -f "Dockerfile" --force-rm -t moviedb/backend  --label "com.microsoft.created-by=visual-studio" --label "com.microsoft.visual-studio.project-name=MovieDbApi.Core" ".../MovieDb/project/backend/MovieDbApi"
+```
 
-1. Set environmental variables in `.env` file;
-2. [Optional] Implement safetly measures within `install.bat` script - get rid of `root` etc;
-2. Run `install.bat`;
+### Frontend
 
-## What `ping -n 15 127.0.0.1 > nul` does?
-On Windows, it's hard to implemnet reliable `sleep` command to wait for certain amount of time. What this command does, is perform `n` pings - in the example it's 15 - one every each second and does not print the output. So in essence, it's equal to `wait n seconds`. It is done to let all the docekr images and services time to boot up.
+1. If you did not change any URLs, paths etc, you're good to go;
+2. Build docker image;
 
+### MySql
+
+Nothing to do here.
+
+### phpMyAdmin
+
+Nothing to do here.
+
+### Deploying to Docker
+
+1. Copy `.env.template` and change name to `.env`;
+2. Set all keys, for example:
+
+    * `MYSQL_ROOT_USER=root`;
+    * `MYSQL_ROOT_PASSWORD=root`;
+    * `SHARED_ROOT_DIR_USER=user`;
+    * `SHARED_ROOT_DIR_PASS=pass`;
+    * `SHARED_ROOT_DIR_ROOT=//192.168.0.110/path`;
+
+You can run `docker_install.bat` - remember to change `root` credentials if you did in previous steps.
+
+Alternatively, you can run all the commands one by one. Of course, remember to wait between commands so image restarts, etc.
 
 ```
+docker compose --env-file ./.env up -d
+
+docker exec -i moviedb-mysql mysql -uroot -proot -e "update mysql.user set host = '%' where user='root';"
+
+docker container restart moviedb-mysql
+
+docker exec -i moviedb-mysql mysql -uroot -proot -e "ALTER USER 'root'@'' IDENTIFIED WITH mysql_native_password BY 'root';"
+```
+
+## Access
 
 ### MySQL
 
-* URL: `http://localhost:3306`;
+* URL: `http://<host>:3306`;
 * User: `root` by default, depends on `.env` file;
 * Password: `root` by default, depends on `.env` file;
 
 ### phpMyAdmin
 
-* URL: `http://localhost:8081`;
+* URL: `http://<host>:8081`;
 
 ### Frontend
 
-```
-TODO
-```
+* URL: `http://<host>:8082`;
 
 ### Backend
 
-```
-TODO
-```
+* URL: `http://<host>:5137`;
+* API: `http://<host>:5137/api`;
+* SWAGGER: `http://<host>:5137/swagger/index.html`;
 
 ## Development
 
