@@ -56,26 +56,71 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         public void Work()
         {
-            HashSet<string> existingFiles = _mediaService.MediaItems.ToHashSet(x => x.Path);
-
-            List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
+            Dictionary<string, MediaItem> existingFiles = _mediaService.MediaItems.ToDictionary(k => k.Path);
 
             MediaCrawlerService crawler = new MediaCrawlerService(_logger, _mediaService);
 
-            // ToList closes db connection so it can be reused later on
-            foreach (string rootPath in _mediaService.ScannedPaths.Select(x => x.Path).ToList())
+            Dictionary<string, List<MediaIntermediateItem>> files = _mediaService.ScannedPaths
+                .Select(x => x.Path)
+                .ToList() // ToList closes db connection so it can be reused later on
+                .Select<string, (string path, List<MediaIntermediateItem> items)>(x => (x, crawler.Crawl(new MediaCrawlContext() { Path = x })))
+                .ToDictionary(k => k.path, v => v.items);
+
+            RemoveOldItems(existingFiles, files);
+            FindNewItems(existingFiles, files);
+        }
+
+        private void RemoveOldItems(Dictionary<string, MediaItem> existingFiles, Dictionary<string, List<MediaIntermediateItem>> files)
+        {
+            Dictionary<string, MediaIntermediateItem> itemsDict = files.SelectMany(x => x.Value).ToDictionary(k => k.FilePath);
+            
+            Dictionary<int, List<MediaItem>> groupsDict = existingFiles.Where(x => x.Value.GroupId.HasValue)
+                .GroupBy(x => x.Value.GroupId.Value)
+                .ToDictionary(k => k.Key, v => v.Select(x => x.Value).ToList());
+
+            foreach (KeyValuePair<string, MediaItem> kvExistingFile in existingFiles.ToList())
             {
-                MediaCrawlContext ctx = new MediaCrawlContext() { Path = rootPath };
+                MediaItem item = kvExistingFile.Value;
 
-                List<MediaIntermediateItem> sortedItems = crawler.Crawl(ctx).ToList();
+                // If item is not grouping and no longer exis on hard drive
+                if (!item.IsGrouping && !itemsDict.ContainsKey(kvExistingFile.Key))
+                {
+                    // Then delete the item from db
+                    _mediaService.Delete(item);
 
-                foreach (IGrouping<string, MediaIntermediateItem> grouping in sortedItems.GroupBy(x => x.Group))
+                    existingFiles.Remove(kvExistingFile.Key);
+
+                    // If item belonged to group
+                    if (item.GroupId.HasValue)
+                    {
+                        // Then remove it from group in memory
+                        groupsDict[item.GroupId.Value].Remove(item);
+                        
+                        // If inmemory group contains only grouping items
+                        // then most probably the group is empty
+                        // so remove the group too.
+                        if (groupsDict[item.GroupId.Value].All(x => x.IsGrouping))
+                        {
+                            groupsDict[item.GroupId.Value].ForEach(x => _mediaService.Delete(x));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FindNewItems(Dictionary<string, MediaItem> existingFiles, Dictionary<string, List<MediaIntermediateItem>> files)
+        {
+            List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
+
+            foreach (KeyValuePair<string, List<MediaIntermediateItem>> kvPair in files)
+            {
+                foreach (IGrouping<string, MediaIntermediateItem> grouping in kvPair.Value.GroupBy(x => x.Group))
                 {
                     List<MediaIntermediateItem> itemsToProcess = GetItemsToProcess(grouping);
 
                     foreach (MediaIntermediateItem itemToProcess in itemsToProcess)
                     {
-                        if (existingFiles.Contains(itemToProcess.FilePath))
+                        if (existingFiles.ContainsKey(itemToProcess.FilePath))
                         {
                             continue;
                         }
@@ -226,8 +271,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 .ToList()
                 ;
 
-            ICollection<MediaItemImage> images = item.Images.Select(x => new MediaItemImage(x)).ToList();
-            ICollection<MediaItemTitle> titles = (item.Titles ?? new List<string>()).Select(x => new MediaItemTitle(x)).ToList();
+            ICollection<MediaItemImage> images = item.Images.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => new MediaItemImage(x)).ToList();
+            ICollection<MediaItemTitle> titles = (item.Titles ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => new MediaItemTitle(x)).ToList();
             ICollection<MediaItemAttribute> attributes = new List<MediaItemAttribute>()
             {
                 new MediaItemAttribute(nameof(MediaMonitorIntermediateMediaItem.ApiSource), item.ApiSource),
@@ -259,10 +304,10 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 DateAdded = DateTime.UtcNow,
                 Instructions = InstructionsProvider.Get(item.Directory, item.FilePath),
                 ExternalId = item.ExternalId,
-                Attributes = attributes,
+                Attributes = attributes.Where(x => !string.IsNullOrWhiteSpace(x.Value)).ToList(),
                 Images = images,
-                Languages = item.MediaLanguages,
-                Links = links,
+                Languages = item.MediaLanguages.Where(x => !string.IsNullOrWhiteSpace(x.Language)).ToList(),
+                Links = links.Where(x => !string.IsNullOrWhiteSpace(x.Link)).ToList(),
                 Titles = titles,
                 Group = item.Group,
                 GroupId = groupId,

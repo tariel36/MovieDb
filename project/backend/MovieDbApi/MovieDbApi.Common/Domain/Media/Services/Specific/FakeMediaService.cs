@@ -29,6 +29,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             }
         }
 
+        public void Delete(MediaItem item)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<MediaItem> GetAll(MediaItemType[] types)
         {
             throw new NotImplementedException();

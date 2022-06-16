@@ -89,6 +89,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
             mediaItem.DateAdded = mediaItem.DateAdded.ToLocalTime();
         }
 
+        public void Delete(MediaItem item)
+        {
+            MediaItem itemToDelete = QueryMediaItemsDetails().First(x => x.Id == item.Id);
+
+            _mediaContext.Remove(itemToDelete);
+            _mediaContext.SaveChanges();
+        }
+
         public List<MediaItem> GetAll(MediaItemType[] types)
         {
             IQueryable<MediaItem> query = QueryMediaItems();
@@ -208,5 +216,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         {
             return (text ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         }
+
     }
 }

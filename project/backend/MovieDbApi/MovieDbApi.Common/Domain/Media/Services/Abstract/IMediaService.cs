@@ -28,5 +28,7 @@ namespace MovieDbApi.Common.Domain.Media.Services.Abstract
         void SetNotificationEmail(string email, string language, MediaItemType[] types);
 
         TranslationCache GetTranslationCache(string targetLanguage, string value);
+
+        void Delete(MediaItem item);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MovieDbApi.Common.Domain.Apis.Abstract;
 using MovieDbApi.Common.Domain.Apis.Models;
+using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Specific.DefaultFallback
@@ -8,7 +9,7 @@ namespace MovieDbApi.Common.Domain.Apis.Specific.DefaultFallback
         : BaseMediaDataProvider
     {
         public DefaultFallbackDataProvider(ILoggerService logger)
-            : base(logger, 999999)
+            : base(logger, 999999, Enum.GetValues<MediaItemType>())
         {
 
         }
