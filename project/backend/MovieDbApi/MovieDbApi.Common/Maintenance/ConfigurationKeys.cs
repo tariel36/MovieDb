@@ -2,6 +2,7 @@
 {
     public static class ConfigurationKeys
     {
+        public const string ConnectionString = nameof(ConnectionString);
         public const string DefaultConnectionString = nameof(DefaultConnectionString);
         public const string MyAnimeList = nameof(MyAnimeList);
         public const string Anilist = nameof(Anilist);
