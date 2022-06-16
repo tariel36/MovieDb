@@ -74,8 +74,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         {
             Dictionary<string, MediaIntermediateItem> itemsDict = files.SelectMany(x => x.Value).ToDictionary(k => k.FilePath);
             
-            Dictionary<int, List<MediaItem>> groupsDict = existingFiles.Where(x => x.Value.GroupId.HasValue)
-                .GroupBy(x => x.Value.GroupId.Value)
+            Dictionary<string, List<MediaItem>> groupsDict = existingFiles.Where(x => x.Value.GroupId.HasValue)
+                .GroupBy(x => x.Value.Group)
                 .ToDictionary(k => k.Key, v => v.Select(x => x.Value).ToList());
 
             foreach (KeyValuePair<string, MediaItem> kvExistingFile in existingFiles.ToList())
@@ -94,14 +94,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     if (item.GroupId.HasValue)
                     {
                         // Then remove it from group in memory
-                        groupsDict[item.GroupId.Value].Remove(item);
+                        groupsDict[item.Group].Remove(item);
                         
                         // If inmemory group contains only grouping items
                         // then most probably the group is empty
                         // so remove the group too.
-                        if (groupsDict[item.GroupId.Value].All(x => x.IsGrouping))
+                        if (groupsDict[item.Group].All(x => x.IsGrouping))
                         {
-                            groupsDict[item.GroupId.Value].ForEach(x => _mediaService.Delete(x));
+                            groupsDict[item.Group].ForEach(x => _mediaService.Delete(x));
                         }
                     }
                 }
