@@ -55,3 +55,10 @@ $margin: 5px;
     width: 256px;
     height: 256px;
 }
+
+.languages-outer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: justify;
+}

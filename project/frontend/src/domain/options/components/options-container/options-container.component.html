@@ -7,7 +7,7 @@
 
 <div *ngIf="!isLoading" class="flex-column options-container">
     <div class="flex-column internal-container">
-        <div>
+        <div class="languages-outer-container">
             <div>{{ 'select-language-instructions' | translate }}</div>
             <div class="languages-container">
                 <img *ngFor="let lang of languages;"
@@ -17,6 +17,9 @@
                     [class.selected-language]="isSelectedLanguage(lang)"
                     [class.not-selected-language]="!isSelectedLanguage(lang)"
                     (click)="onFlagClick(lang)" />
+            </div>
+            <div>
+                {{ 'machine-translation-warning' | translate }}
             </div>
         </div>
         <hr class="w-100" />

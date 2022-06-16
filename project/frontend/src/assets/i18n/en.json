@@ -46,5 +46,6 @@
     "type": "Type",
     "language": "Language",
     "Voice": "Voice",
-    "Subtitles": "Subtitles"
+    "Subtitles": "Subtitles",
+    "machine-translation-warning": "Warning. All the content of this service is translated through machine translation (by. translator) from english language to the chosen language, so for example, titles may not be translated accuertly."
 }

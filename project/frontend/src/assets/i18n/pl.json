@@ -46,5 +46,6 @@
     "type": "Typ",
     "language": "Język",
     "Voice": "Dźwięk",
-    "Subtitles": "Napisy"
+    "Subtitles": "Napisy",
+    "machine-translation-warning": "Uwaga. Całość zawartości tego serwisu tłumaczona jest maszynowo (tj. translatorem) z języka angielskiego na wybrany język, wiec np. niektóre tytuły mogą nie odpowiadać faktycznej wersji."
 }
