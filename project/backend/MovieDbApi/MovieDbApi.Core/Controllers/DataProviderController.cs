@@ -26,6 +26,12 @@ namespace MovieDbApi.Core.Controllers
             _converter = converter;
         }
 
+        [HttpGet("ping")]
+        public string Ping()
+        {
+            return "Pong";
+        }
+
         [HttpPost("options/NotificationEmail")]
         public void SetNotificationEmail()
         {

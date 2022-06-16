@@ -40,6 +40,9 @@ namespace MovieDbApi.Common.Data.Specific
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             string connectionString = _configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString);
+
+            _logger.Log($"Connection string: `{connectionString}`");
+
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
                 .LogTo(_logger.Log, LogLevel.Information)
                 .EnableSensitiveDataLogging()

@@ -16,6 +16,15 @@ export class MediaItemsService {
 
     }
 
+    public async ping(): Promise<string> {
+        const val = (await this.httpClient.get(
+            `${environment.baseApiUrl}/DataProvider/ping`,
+            { responseType: 'text' }
+        ).toPromise());
+
+        return val ?? 'FAIL';
+    }
+
     public async setNotificationEmail(email: string, mediaItemTypes?: number[] | string[]): Promise<void> {
         await this.httpClient.post<IMediaItem[]>(
             `${environment.baseApiUrl}/DataProvider/options/NotificationEmail`,

@@ -54,6 +54,12 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/options')
     }
 
+    public onPingClick(): void {
+        this.mediaItemsService.ping()
+            .then(x => { console.log('then', x); })
+            .catch(x => { console.log('catch', x); })
+    }
+
     public onRandomClick(): void {
         const types = JSON.parse(this.localStorageService.getValue(LocalStorageKeys.selectedMediaItemTypes) ?? '[]') as number[];
         this.mediaItemsService.getRandom(types)
