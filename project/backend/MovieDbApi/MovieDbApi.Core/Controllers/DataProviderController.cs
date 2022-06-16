@@ -154,7 +154,7 @@ namespace MovieDbApi.Core.Controllers
         }
 
         [HttpGet("details/{id:int}")]
-        public GroupMediaItem GetDetails(int id)
+        public IActionResult GetDetails(int id)
         {
             string targetLang = GetTargetLanguage();
 
@@ -162,14 +162,14 @@ namespace MovieDbApi.Core.Controllers
 
             if (item == null)
             {
-                return null;
+                return NotFound();
             }
 
-            return new GroupMediaItem()
+            return Ok(new GroupMediaItem()
             {
                 GroupingItem = _converter.Convert(new BackendToFrontendConverterContex(item, CommonConsts.BaseLanguage, targetLang)),
                 Items = new List<MediaItem>()
-            };
+            });
         }
 
         [HttpGet("image/{id:int}")]
@@ -179,7 +179,7 @@ namespace MovieDbApi.Core.Controllers
 
             if (!System.IO.File.Exists(image.Image))
             {
-                return null;
+                return NotFound();
             }
 
             return File(System.IO.File.OpenRead(image.Image), $"image/{System.IO.Path.GetExtension(image.Image).Replace(".", string.Empty)}");
