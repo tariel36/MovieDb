@@ -21,14 +21,17 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
         private readonly IBackendToFrontendConverter _converter;
         private readonly IConfiguration _configuration;
         private readonly ILoggerService _logger;
+        private readonly ITranslator _translator;
 
         public EmailNotificationService(
             MediaContext mediaContext,
             ILoggerService logger,
             IConfiguration configuration,
+            ITranslator translator,
             IBackendToFrontendConverter converter)
         {
             _configuration = configuration;
+            _translator = translator;
             _logger = logger;
             _mediaContext = mediaContext;
             _converter = converter;
@@ -36,9 +39,30 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
 
         public void Work()
         {
-            DateTime today = DateTime.UtcNow;
+            DateTime today = DateTime.UtcNow.Date;
 
-            List<Subscriber> subscribers = _mediaContext.Subscribers.Include(x => x.MediaItemTypes).ToList();
+            List<Subscriber> subscribers = null;
+
+            int tries = 10;
+            while (tries > 0)
+            {
+                try
+                {
+                    subscribers = _mediaContext.Subscribers.Include(x => x.MediaItemTypes).ToList();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    tries--;
+
+                    if (tries < 0)
+                    {
+                        throw;
+                    }
+
+                    Task.Delay(1000).Wait();
+                }
+            }
 
             if (!(subscribers?.Count > 0))
             {
@@ -47,7 +71,30 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
 
             List<MediaItem> mediaItems = _mediaContext.MediaItems
                 .Where(x => x.DateAdded.Date == today)
-                .Where(x => x.IsGrouping || x.Group == null)
+                .AsEnumerable()
+                .GroupBy(x => x.Group)
+                .SelectMany(x =>
+                {
+                    MediaItem firstItem = x.First();
+                    int groupCount = x.Count();
+
+                    if (groupCount == 1)
+                    {
+                        return x;
+                    }
+
+                    if (firstItem.Type == MediaItemType.Anime || firstItem.Type == MediaItemType.Series || firstItem.Type == MediaItemType.Cartoon)
+                    {
+                        return x.Where(y => y.IsGrouping || y.Group == null);
+                    }
+
+                    if (firstItem.Type == MediaItemType.Movie || firstItem.Type == MediaItemType.Concert)
+                    {
+                        return x.Where(y => !y.IsGrouping);
+                    }
+
+                    return x;
+                })
                 .ToList();
 
             if (!(mediaItems?.Count > 0))
@@ -70,7 +117,7 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
 
             foreach (Subscriber subscriber in subscribers)
             {
-                string title = DateTime.Today.ToString("yyyy-MM-dd");
+                string title = $"{_translator.Translate(CommonConsts.BaseLanguage, subscriber.Language, "New movies")} - {DateTime.Today:yyyy-MM-dd}";
 
                 StringBuilder sbMessage = new StringBuilder();
 
