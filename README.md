@@ -47,7 +47,7 @@ docker build -f "Dockerfile" --force-rm -t moviedb/backend  --label "com.microso
 ### Frontend
 
 1. If you did not change any URLs, paths etc, you're good to go;
-2. Build docker image;
+2. Build docker image - `docker build -t moviedb/frontend:latest .`;
 
 ### MySql
 
