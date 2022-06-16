@@ -62,6 +62,18 @@ namespace MovieDbApi.Common.Domain.Tasks
             }
         }
 
+        public void Execute(string what)
+        {
+            switch (what)
+            {
+                case nameof(IMediaMonitor):
+                {
+                    Task.Factory.StartNew(() => _mediaMonitor.Work());
+                    break;
+                }
+            }
+        }
+
         public void Dispose()
         {
             Extensions.SafeDispose(_scope);

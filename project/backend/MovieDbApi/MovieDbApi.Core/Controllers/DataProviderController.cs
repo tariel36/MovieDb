@@ -5,6 +5,7 @@ using MovieDbApi.Common.Domain.Apis.Converters.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Dto;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Tasks;
 using MovieDbApi.Common.Domain.Utility;
 
 namespace MovieDbApi.Core.Controllers
@@ -19,11 +20,21 @@ namespace MovieDbApi.Core.Controllers
 
         private readonly IMediaService _mediaService;
         private readonly IBackendToFrontendConverter _converter;
+        private readonly ServicesContainer _servicesContainer;
 
-        public DataProviderController(IMediaService mediaService, IBackendToFrontendConverter converter)
+        public DataProviderController(IMediaService mediaService,
+            IBackendToFrontendConverter converter,
+            ServicesContainer servicesContainer)
         {
             _mediaService = mediaService;
             _converter = converter;
+            _servicesContainer = servicesContainer;
+        }
+
+        [HttpGet("crawl")]
+        public void Crawl()
+        {
+            _servicesContainer.Execute(nameof(IMediaMonitor));
         }
 
         [HttpGet("ping")]
