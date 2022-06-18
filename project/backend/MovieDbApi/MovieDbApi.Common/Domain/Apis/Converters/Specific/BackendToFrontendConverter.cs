@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using MovieDbApi.Common.Data.Specific;
 using MovieDbApi.Common.Domain.Apis.Converters.Abstract;
 using MovieDbApi.Common.Domain.Apis.Converters.Models;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
 using MovieDbApi.Common.Domain.Utility;
+using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
 {
@@ -54,14 +56,27 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
         };
 
         private readonly ITranslator _translator;
+        private readonly ILoggerService _logger;
+        private readonly MediaContext _mediaContext;
 
-        public BackendToFrontendConverter(ITranslator translator)
+        public BackendToFrontendConverter(ITranslator translator,
+            ILoggerService logger,
+            MediaContext mediaContext)
         {
             _translator = translator;
+            _logger = logger;
+            _mediaContext = mediaContext;
         }
+
+        private ICollection<ScannedPath> ScannedPaths { get; set; }
 
         public MediaItem Convert(BackendToFrontendConverterContex ctx)
         {
+            if (ScannedPaths == null)
+            {
+                ScannedPaths = _mediaContext.ScannedPaths.ToList();
+            }
+
             MediaItem item = ctx.MediaItem;
 
             MediaItem result = ObjectCopy.ShallowCopy(item);
@@ -76,6 +91,29 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
             result.Instructions = GetInstructions(item);
             result.ItemsCount = item.ItemsCount;
             result.DirectoryOrder = item.DirectoryOrder;
+            
+            try
+            {
+                result.DisplayPath = item.Path;
+
+                foreach (ScannedPath? scannedPath in ScannedPaths)
+                {
+                    result.DisplayPath = result.DisplayPath.Replace(scannedPath.Path, scannedPath.DisplayPath);
+                }
+
+                if (File.Exists(item.Path))
+                {
+                    result.DirectoryPath = Path.GetDirectoryName(item.Path);
+                }
+                else if (File.Exists(result.DisplayPath))
+                {
+                    result.DirectoryPath = Path.GetDirectoryName(result.DisplayPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(ex);
+            }
 
             if (item.Attributes?.Count > 0)
             {

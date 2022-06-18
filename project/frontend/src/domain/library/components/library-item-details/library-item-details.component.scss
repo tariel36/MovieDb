@@ -116,3 +116,8 @@
 .label-column {
     min-width: 100px;
 }
+
+.paths-container {
+    display: flex;
+    flex-direction: column;
+}

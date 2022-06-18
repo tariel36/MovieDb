@@ -83,18 +83,31 @@
                 <div class="mat-elevation-z2 small-title">
                     {{ 'location' | translate }}
                 </div>
-                <div>
+                <div class="paths-container">
                     <mat-form-field class="w-100" appearance="legacy">
-                        <mat-label>{{ 'path' | translate }}</mat-label>
+                        <mat-label *ngIf="mediaItem.groupingItem.isGrouping">{{ 'directory-path' | translate }}</mat-label>
+                        <mat-label *ngIf="!mediaItem.groupingItem.isGrouping">{{ 'file-path' | translate }}</mat-label>
                         <textarea
                             matInput
                             readonly
                             cdkTextareaAutosize
                             cdkAutosizeMinRows="4"
-                            [value]="mediaItem.groupingItem.path"
+                            [value]="mediaItem.groupingItem.displayPath"
                         ></textarea>
                     </mat-form-field>
-                    <button mat-raised-button color="primary" class="w-100 margin-bottom-10" [cdkCopyToClipboard]="mediaItem.groupingItem.path">{{ 'copy-path' | translate }}</button>
+                    <button *ngIf="!mediaItem.groupingItem.isGrouping" mat-raised-button color="primary" class="w-100 margin-bottom-10" [cdkCopyToClipboard]="mediaItem.groupingItem.displayPath">{{ 'copy-file-path' | translate }}</button>
+                    <button *ngIf="mediaItem.groupingItem.isGrouping" mat-raised-button color="primary" class="w-100 margin-bottom-10" [cdkCopyToClipboard]="mediaItem.groupingItem.displayPath">{{ 'copy-directory-path' | translate }}</button>
+                    <mat-form-field *ngIf="mediaItem.groupingItem.directoryPath" class="w-100" appearance="legacy">
+                        <mat-label>{{ 'directory-path' | translate }}</mat-label>
+                        <textarea
+                            matInput
+                            readonly
+                            cdkTextareaAutosize
+                            cdkAutosizeMinRows="4"
+                            [value]="mediaItem.groupingItem.directoryPath"
+                        ></textarea>
+                    </mat-form-field>
+                    <button *ngIf="mediaItem.groupingItem.directoryPath" mat-raised-button color="primary" class="w-100 margin-bottom-10" [cdkCopyToClipboard]="mediaItem.groupingItem.directoryPath">{{ 'copy-directory-path' | translate }}</button>
                 </div>
                 <div *ngIf="mediaItem.groupingItem.instructions" class="mat-elevation-z2 small-title">
                     {{ 'instructions' | translate }}

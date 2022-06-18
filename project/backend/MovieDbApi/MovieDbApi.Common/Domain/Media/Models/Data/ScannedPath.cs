@@ -8,5 +8,7 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
         public int Id { get; set; }
 
         public string Path { get; set; }
+        
+        public string? DisplayPath { get; set; }
     }
 }

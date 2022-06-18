@@ -54,5 +54,11 @@ namespace MovieDbApi.Common.Domain.Media.Models.Data
 
         [NotMapped]
         public int ItemsCount { get; set; }
+
+        [NotMapped]
+        public string DirectoryPath { get; set; }
+
+        [NotMapped]
+        public string DisplayPath { get; set; }
     }
 }

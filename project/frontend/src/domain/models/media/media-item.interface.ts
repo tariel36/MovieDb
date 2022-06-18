@@ -21,5 +21,7 @@ export interface IMediaItem {
     titles: IMediaItemTitle[];
     languages: IMediaItemLanguage[];
     
+    displayPath: string;
+    directoryPath: string;
     itemsCount: number;
 }
