@@ -96,7 +96,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
             {
                 result.DisplayPath = item.Path;
 
-                foreach (ScannedPath? scannedPath in ScannedPaths)
+                foreach (ScannedPath scannedPath in ScannedPaths)
                 {
                     result.DisplayPath = result.DisplayPath.Replace(scannedPath.Path, scannedPath.DisplayPath);
                 }
@@ -108,6 +108,14 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
                 else if (File.Exists(result.DisplayPath))
                 {
                     result.DirectoryPath = Path.GetDirectoryName(result.DisplayPath);
+                }
+
+                if (!string.IsNullOrWhiteSpace(result.DirectoryPath))
+                {
+                    foreach (ScannedPath scannedPath in ScannedPaths)
+                    {
+                        result.DirectoryPath = result.DirectoryPath.Replace(scannedPath.Path, scannedPath.DisplayPath);
+                    }
                 }
             }
             catch (Exception ex)
