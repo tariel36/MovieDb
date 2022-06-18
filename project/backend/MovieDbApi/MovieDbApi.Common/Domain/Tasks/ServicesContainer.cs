@@ -68,7 +68,17 @@ namespace MovieDbApi.Common.Domain.Tasks
             {
                 case nameof(IMediaMonitor):
                 {
-                    Task.Factory.StartNew(() => _mediaMonitor.Work());
+                    Task.Factory.StartNew(() =>
+                    {
+                        try
+                        {
+                            _mediaMonitor.Work();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log(ex);
+                        }
+                    });
                     break;
                 }
             }

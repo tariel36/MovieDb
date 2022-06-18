@@ -45,10 +45,14 @@ namespace MovieDbApi.Common.Data.Specific
             _logger.Log($"Connection string: `{connectionStringKey}` = `{connectionString}`");
 
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-                .LogTo(_logger.Log, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors()
                 ;
+
+            if (string.Equals(_configuration[ConfigurationKeys.IsDeveloper], "true", StringComparison.InvariantCultureIgnoreCase))
+            {
+                options.LogTo(_logger.Log, LogLevel.Information);
+            }
         }
     }
 }

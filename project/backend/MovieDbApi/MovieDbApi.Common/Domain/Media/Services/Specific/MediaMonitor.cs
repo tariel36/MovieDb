@@ -72,6 +72,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
         private void RemoveOldItems(Dictionary<string, MediaItem> existingFiles, Dictionary<string, List<MediaIntermediateItem>> files)
         {
+            _logger.Log("Try to remove non existing files.");
+
             Dictionary<string, MediaIntermediateItem> itemsDict = files.SelectMany(x => x.Value).ToDictionary(k => k.FilePath);
             
             Dictionary<string, List<MediaItem>> groupsDict = existingFiles.Where(x => x.Value.GroupId.HasValue)
@@ -106,10 +108,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     }
                 }
             }
+
+            _logger.Log("Finished removing non existing files.");
         }
 
         private void FindNewItems(Dictionary<string, MediaItem> existingFiles, Dictionary<string, List<MediaIntermediateItem>> files)
         {
+            _logger.Log("Trying to process new items.");
+
             List<MediaMonitorIntermediateMediaItem> result = new List<MediaMonitorIntermediateMediaItem>();
 
             foreach (KeyValuePair<string, List<MediaIntermediateItem>> kvPair in files)
@@ -120,8 +126,11 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
 
                     foreach (MediaIntermediateItem itemToProcess in itemsToProcess)
                     {
+                        _logger.Log($"Processing `{itemToProcess.FilePath}`");
+
                         if (existingFiles.ContainsKey(itemToProcess.FilePath))
                         {
+                            _logger.Log($"`{itemToProcess.FilePath}` already exists, skipping");
                             continue;
                         }
 
@@ -201,6 +210,8 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                     _mediaService.SaveMediaItem(ToMediaItem(item, false, groupId));
                 }
             }
+
+            _logger.Log("Finished with processing new items.");
         }
 
         private MediaMonitorIntermediateMediaItem ToMediaMonitorIntermediateMediaItem(int groupCount,
@@ -324,30 +335,6 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
                 .Replace(CommonRegex.OrderedTitleRegex, string.Empty)
                 .Trim()
                 ;
-        }
-
-        private ApiMediaItemDetails GetDefault(string title, MediaIntermediateItem item)
-        {
-            return new ApiMediaItemDetails()
-            {
-                ApiSource = "Default",
-                Duration = string.Empty,
-                DurationPerEpisode = string.Empty,
-                ExternalId = string.Empty,
-                Genre = string.Empty,
-                Plot = string.Empty,
-                Poster = item.MainImage ?? item.Images?.FirstOrDefault(),
-                Rated = string.Empty,
-                Rating = string.Empty,
-                ReleaseDate = string.Empty,
-                Staff = string.Empty,
-                Title = title,
-                Titles = new List<string>(),
-                Type = string.Empty,
-                Url = string.Empty,
-                Year = string.Empty,
-                MediaType = MediaItemType.Unknown,
-            };
         }
     }
 }
