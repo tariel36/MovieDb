@@ -17,7 +17,7 @@ services:
     container_name: moviedb-phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
     ports:
-      - 8081:80
+      - 3308:80
     networks:
       - moviedb-net
     environment:
@@ -26,6 +26,7 @@ services:
   moviedb-backend:
     container_name: moviedb-backend
     image: moviedb/backend:latest
+    pull_policy: never
     volumes:
       - moviedb-files-root:/app/ext_root
     ports:
@@ -36,8 +37,9 @@ services:
   moviedb-frontend:
     container_name: moviedb-frontend
     image: moviedb/frontend:latest
+    pull_policy: never
     ports:
-      - 8082:80
+      - 3309:80
     networks:
       - moviedb-net
 
