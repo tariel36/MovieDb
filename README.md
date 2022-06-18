@@ -10,7 +10,7 @@ Docker compose file contains of 4 services:
 * Frontend service;
 * Backend service;
 
-Be aware that this package is designed for at home use, because root is used as main DB user with unsafe password. If your resolve thsoe issues, you're good to go.
+Be aware that this package is designed for at home use, because root is used as main DB user with unsafe password. If your resolve those issues, you're good to go.
 
 ## Building & Deploying
 
@@ -66,7 +66,7 @@ Nothing to do here.
     * `MYSQL_ROOT_PASSWORD=root`;
     * `SHARED_ROOT_DIR_USER=user`;
     * `SHARED_ROOT_DIR_PASS=pass`;
-    * `SHARED_ROOT_DIR_ROOT=//192.168.0.110/path`;
+    * `SHARED_ROOT_DIR_ROOT=//192.168.0.1/path`;
 
 You can run `docker_install.bat` - remember to change `root` credentials if you did in previous steps.
 
@@ -86,17 +86,17 @@ docker exec -i moviedb-mysql mysql -uroot -proot -e "ALTER USER 'root'@'' IDENTI
 
 ### MySQL
 
-* URL: `http://<host>:3306`;
+* URL: `http://<host>:3307`;
 * User: `root` by default, depends on `.env` file;
 * Password: `root` by default, depends on `.env` file;
 
 ### phpMyAdmin
 
-* URL: `http://<host>:8081`;
+* URL: `http://<host>:3308`;
 
 ### Frontend
 
-* URL: `http://<host>:8082`;
+* URL: `http://<host>:3309`;
 
 ### Backend
 
