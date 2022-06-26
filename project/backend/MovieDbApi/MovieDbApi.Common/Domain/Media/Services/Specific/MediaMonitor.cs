@@ -24,11 +24,14 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
     {
         private readonly ILoggerService _logger;
         private readonly IMediaService _mediaService;
+        private readonly IPathsService _pathsService;
 
         public MediaMonitor(ILoggerService logger,
             IConfiguration configuration,
+            IPathsService pathsService,
             IMediaService mediaContextService)
         {
+            _pathsService = pathsService;
             _logger = logger;
             _mediaService = mediaContextService;
 
@@ -58,9 +61,9 @@ namespace MovieDbApi.Common.Domain.Media.Services.Specific
         {
             Dictionary<string, MediaItem> existingFiles = _mediaService.MediaItems.ToDictionary(k => k.Path);
 
-            MediaCrawlerService crawler = new MediaCrawlerService(_logger, _mediaService);
+            MediaCrawlerService crawler = new MediaCrawlerService(_logger, _mediaService, _pathsService);
 
-            Dictionary<string, List<MediaIntermediateItem>> files = _mediaService.ScannedPaths
+            Dictionary<string, List<MediaIntermediateItem>> files = _pathsService.GetPathToAnalyze()
                 .Select(x => x.Path)
                 .ToList() // ToList closes db connection so it can be reused later on
                 .Select<string, (string path, List<MediaIntermediateItem> items)>(x => (x, crawler.Crawl(new MediaCrawlContext() { Path = x })))

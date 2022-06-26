@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Files;
-using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe;
 using MovieDbApi.Common.Domain.Files.Decoders.NutaReadMe.Models;
 using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
 namespace MovieDbApi.Common.Domain.Crawling.Services
@@ -12,11 +12,14 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
     public class MediaCrawlerService
     {
         private readonly Regex OrderedDirectoryRegex = new Regex("^[0-9]+\\.", RegexOptions.Compiled);
+        private readonly IPathsService _pathsService;
         private readonly ILoggerService _logger;
 
         public MediaCrawlerService(ILoggerService logger,
-            IMediaService mediaContextService)
+            IMediaService mediaContextService,
+            IPathsService pathsService)
         {
+            _pathsService = pathsService;
             _logger = logger;
 
             MediaContextService = mediaContextService;
@@ -42,7 +45,7 @@ namespace MovieDbApi.Common.Domain.Crawling.Services
         {
             IgnoredPaths.Clear();
 
-            IgnoredPathKeywords = new Regex("(\\\\|\\/)([0-9]+([a-zA-Z]+)?\\.[ ]*)?((" + string.Join("|", MediaContextService.IgnoredPaths.Select(x => x.Path)) + "))(\\\\|\\/)?", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
+            IgnoredPathKeywords = new Regex("(\\\\|\\/)([0-9]+([a-zA-Z]+)?\\.[ ]*)?((" + string.Join("|", _pathsService.IgnoredPaths.Select(x => x.Path)) + "))(\\\\|\\/)?", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
             // We have some kind of tree structure here.
             // Now we have to squash that to the topmost level,

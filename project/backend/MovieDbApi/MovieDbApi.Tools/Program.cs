@@ -25,8 +25,9 @@ ILoggerService logger = new LoggerService(new ILoggerSink[] { new ConsoleLoggerS
 MediaContext ctx = new MediaContext(configuration, logger);
 
 IMediaService mediaService = new MediaService(ctx, hashProvider);
+IPathsService pathsService = new PathsService(ctx);
 
-MediaMonitor monitor = new MediaMonitor(logger, configuration, mediaService);
+MediaMonitor monitor = new MediaMonitor(logger, configuration, pathsService, mediaService);
 monitor.Work();
 
 Console.WriteLine("Done");

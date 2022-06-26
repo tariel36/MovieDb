@@ -26,6 +26,7 @@ builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IBackendToFrontendConverter, BackendToFrontendConverter>();
 builder.Services.AddScoped<ITranslator, GoogleTranslate>();
 builder.Services.AddScoped<INotificationService, EmailNotificationService>();
+builder.Services.AddScoped<IPathsService, PathsService>();
 
 builder.Services.AddTransient<ILoggerSink, ConsoleLoggerSink>();
 

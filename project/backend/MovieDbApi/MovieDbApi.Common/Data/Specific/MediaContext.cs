@@ -53,6 +53,10 @@ namespace MovieDbApi.Common.Data.Specific
             {
                 options.LogTo(_logger.Log, LogLevel.Information);
             }
+            else
+            {
+                options.LogTo(log => { }, LogLevel.Trace);
+            }
         }
     }
 }

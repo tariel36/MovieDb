@@ -11,6 +11,8 @@ using MovieDbApi.Common.Domain.Apis.Converters.Models;
 using MovieDbApi.Common.Domain.Crawling.Models;
 using MovieDbApi.Common.Domain.Media.Models.Data;
 using MovieDbApi.Common.Domain.Media.Models.Monitoring;
+using MovieDbApi.Common.Domain.Media.Services.Abstract;
+using MovieDbApi.Common.Domain.Media.Services.Specific;
 using MovieDbApi.Common.Domain.Utility;
 using MovieDbApi.Common.Maintenance.Logging.Abstract;
 
@@ -57,14 +59,17 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
 
         private readonly ITranslator _translator;
         private readonly ILoggerService _logger;
+        private readonly IPathsService _pathsService;
         private readonly MediaContext _mediaContext;
 
         public BackendToFrontendConverter(ITranslator translator,
             ILoggerService logger,
+            IPathsService pathsService,
             MediaContext mediaContext)
         {
             _translator = translator;
             _logger = logger;
+            _pathsService = pathsService;
             _mediaContext = mediaContext;
         }
 
@@ -74,7 +79,7 @@ namespace MovieDbApi.Common.Domain.Apis.Converters.Specific
         {
             if (ScannedPaths == null)
             {
-                ScannedPaths = _mediaContext.ScannedPaths.ToList();
+                ScannedPaths = _pathsService.GetPathToAnalyze();
             }
 
             MediaItem item = ctx.MediaItem;
