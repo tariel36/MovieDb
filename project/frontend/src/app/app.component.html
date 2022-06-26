@@ -1,6 +1,9 @@
 <mat-toolbar color="primary">
     <div class="clickable" (click)="onTitleClick()"><span>{{title}}</span></div>
     <span class="navigation-spacer"></span>
+    <button mat-icon-button (click)="onCrawlClick()">
+        <mat-icon>explore</mat-icon>
+    </button>
     <button mat-icon-button (click)="onPingClick()">
         <mat-icon>network_check</mat-icon>
     </button>

@@ -16,6 +16,13 @@ export class MediaItemsService {
 
     }
 
+    public async crawl(): Promise<void> {
+        await this.httpClient.get(
+            `${environment.baseApiUrl}/DataProvider/crawl`,
+            { responseType: 'text' }
+        ).toPromise();
+    }
+
     public async ping(): Promise<string> {
         const val = (await this.httpClient.get(
             `${environment.baseApiUrl}/DataProvider/ping`,

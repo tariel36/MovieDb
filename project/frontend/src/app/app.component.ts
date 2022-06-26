@@ -54,6 +54,12 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/options')
     }
 
+    public onCrawlClick(): void {
+        this.mediaItemsService.crawl()
+            .then(x => { console.log('then', x); })
+            .catch(x => { console.log('catch', x); })
+    }
+
     public onPingClick(): void {
         this.mediaItemsService.ping()
             .then(x => { console.log('then', x); })
