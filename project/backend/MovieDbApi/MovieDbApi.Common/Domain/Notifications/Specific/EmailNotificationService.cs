@@ -124,13 +124,17 @@ namespace MovieDbApi.Common.Domain.Notifications.Specific
                 sbMessage.AppendLine(title + ":");
 
                 List<MediaItemType> mediaItemTypes = subscriber.MediaItemTypes?.Select(x => x.Type)?.ToList() ?? new List<MediaItemType>();
+                List<MediaItem> itemsToNotifyAbout = translatedItems[subscriber.Language].Where(x => mediaItemTypes.Contains(x.Type)).ToList();
 
-                foreach (MediaItem item in translatedItems[subscriber.Language].Where(x => mediaItemTypes.Contains(x.Type)))
+                if (itemsToNotifyAbout.Count > 0)
                 {
-                    sbMessage.AppendLine(item.Title);
-                }
+                    foreach (MediaItem item in itemsToNotifyAbout)
+                    {
+                        sbMessage.AppendLine(item.Title);
+                    }
 
-                TrySendEmail(subscriber.Email, title, sbMessage.ToString());
+                    TrySendEmail(subscriber.Email, title, sbMessage.ToString());
+                }
             }
         }
 
