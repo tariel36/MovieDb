@@ -49,13 +49,9 @@ namespace MovieDbApi.Common.Data.Specific
                 .EnableDetailedErrors()
                 ;
 
-            if (string.Equals(_configuration[ConfigurationKeys.IsDeveloper], "true", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(_configuration[ConfigurationKeys.IsDeveloper], "true", StringComparison.InvariantCultureIgnoreCase) && _logger != null)
             {
                 options.LogTo(_logger.Log, LogLevel.Information);
-            }
-            else
-            {
-                options.LogTo(log => { }, LogLevel.Trace);
             }
         }
     }
